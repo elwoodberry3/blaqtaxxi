@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm run dev)",
+      "Bash(npm run build)",
+      "Bash(npm run lint)",
+      "Bash(npm run typecheck)",
+      "Bash(npm test)",
+      "Bash(npm test:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx drizzle-kit generate:*)",
+      "Bash(npx playwright test:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)"
+    ],
+    "ask": [
+      "Bash(npx drizzle-kit push:*)",
+      "Bash(npx drizzle-kit migrate:*)",
+      "Bash(vercel:*)",
+      "Bash(git push:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.local)",
+      "Read(./.env.production)",
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)"
+    ]
+  },
+  "env": {
+    "TZ": "America/Chicago"
+  }
+}

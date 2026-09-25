@@ -1,0 +1,45 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": { "Authorization": "Bearer ${GITHUB_PAT}" }
+    },
+    "neon": {
+      "type": "http",
+      "url": "https://mcp.neon.tech/mcp"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com"
+    },
+    "stripe": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@stripe/mcp", "--tools=all"],
+      "env": { "STRIPE_SECRET_KEY": "${STRIPE_TEST_RESTRICTED_KEY}" }
+    },
+    "n8n": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "n8n-mcp"],
+      "env": {
+        "MCP_MODE": "stdio",
+        "LOG_LEVEL": "error",
+        "DISABLE_CONSOLE_OUTPUT": "true",
+        "N8N_API_URL": "${N8N_API_URL}",
+        "N8N_API_KEY": "${N8N_API_KEY}"
+      }
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    },
+    "docs": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  }
+}
