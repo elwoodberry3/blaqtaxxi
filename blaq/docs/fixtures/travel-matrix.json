@@ -1,0 +1,53 @@
+{
+  "_note": "ILLUSTRATIVE demo numbers for tests and demo mode. Not measured traffic. Minutes are off-peak base times, symmetric. Fake-but-realistic DFW landmarks; no real people or addresses.",
+  "config": {
+    "peakWindowsLocal": [["06:30", "09:30"], ["15:30", "19:00"]],
+    "peakFactorShort": 1.4,
+    "peakFactorLong": 1.8,
+    "shortThresholdMin": 15,
+    "rounding": "ceil",
+    "lookupBy": "departure-time"
+  },
+  "places": {
+    "HOME":  { "label": "Driver home base (Lewisville, fake)", "lat": 33.0462, "lng": -96.9942 },
+    "LEW_A": { "label": "Lewisville pickup A (fake)",           "lat": 33.0390, "lng": -97.0080 },
+    "DAL_A": { "label": "Downtown Dallas A (Reunion area)",     "lat": 32.7767, "lng": -96.8085 },
+    "DAL_B": { "label": "Deep Ellum",                            "lat": 32.7838, "lng": -96.7830 },
+    "PLA":   { "label": "Plano (Legacy area)",                   "lat": 33.0770, "lng": -96.8210 },
+    "FRI":   { "label": "Frisco (Star area)",                    "lat": 33.1070, "lng": -96.8290 },
+    "FTW_A": { "label": "Fort Worth (Sundance Sq area)",         "lat": 32.7555, "lng": -97.3308 }
+  },
+  "baseMinutes": {
+    "HOME-LEW_A": 6,
+    "HOME-DAL_A": 34,
+    "HOME-DAL_B": 36,
+    "HOME-PLA": 26,
+    "HOME-FRI": 22,
+    "HOME-FTW_A": 40,
+    "LEW_A-DAL_A": 35,
+    "LEW_A-DAL_B": 37,
+    "LEW_A-PLA": 24,
+    "LEW_A-FRI": 20,
+    "LEW_A-FTW_A": 41,
+    "DAL_A-DAL_B": 7,
+    "DAL_A-PLA": 30,
+    "DAL_A-FRI": 40,
+    "DAL_A-FTW_A": 38,
+    "DAL_B-PLA": 29,
+    "DAL_B-FRI": 39,
+    "DAL_B-FTW_A": 40,
+    "PLA-FRI": 12,
+    "PLA-FTW_A": 50,
+    "FRI-FTW_A": 52
+  },
+  "derivedExamples": {
+    "_note": "Sanity values the demo provider must reproduce (depart time decides peak).",
+    "LEW_A->DAL_A depart 08:03 (peak)": 63,
+    "DAL_A->LEW_A depart 09:08 (peak)": 63,
+    "DAL_A->DAL_B depart 09:08 (peak)": 10,
+    "DAL_B->PLA depart 09:33 (off-peak)": 29,
+    "PLA->LEW_A depart 10:04 (off-peak)": 24,
+    "HOME->PLA depart 05:00 (off-peak)": 26,
+    "LEW_A->DAL_A depart 14:00 (off-peak)": 35
+  }
+}
