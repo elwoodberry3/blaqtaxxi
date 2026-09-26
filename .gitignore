@@ -303,6 +303,32 @@ Desktop.ini
 # requirements.txt    <- COMMIT THIS
 
 
+# -----------------------------------------------------------------------------
+# Client Assets
+# -----------------------------------------------------------------------------
+# Client-supplied originals (real photos, brand files): uploaded via the admin, never committed
+client-assets/*
+!client-assets/README.md
+
+
+# -----------------------------------------------------------------------------
+# Native Driver Shell
+# -----------------------------------------------------------------------------
+# iOS build output / dependencies
+native/driver-shell/ios/App/Pods/
+native/driver-shell/ios/App/build/
+
+# Android build output / dependencies
+native/driver-shell/android/.gradle/
+native/driver-shell/android/build/
+native/driver-shell/android/app/build/
+
+# Mobile signing / provisioning files
+*.keystore
+*.jks
+*.mobileprovision
+
+
 # =============================================================================
 # END — IAS Universal .gitignore
 # Last updated: 2026-06 · v1.0

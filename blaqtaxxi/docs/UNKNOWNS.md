@@ -57,6 +57,7 @@ Two things are left, and neither stops the plan-mode prompt. Both change what Ph
 | **U-C2** | Run costs during the pilot (Vercel, Neon, Upstash, Google Cloud, SMS, storage) and a monthly ceiling; who pays at handoff | Phase 9 | Free/dev tiers, budget alerts | Steve |
 | **U-C3** | Support during the pilot: who answers a member of the public who reaches the payment step and expects a ride | Phase 9 | Pilot banner + "no rides are booked in the pilot" copy | Steve / Client |
 | **U-C4** | Data retention/deletion, including public data entered in the pilot | Phase 9 | Unpaid-hold contact data purged within 24 h; paid test bookings deleted at pilot end | Steve |
+| **U-C5** | **The driver's photo and the car images were committed to a public GitHub repo** (found in Episode 0). Does the client know, and does he consent to how they were used? Has the repo been made private and the history purged (D-125)? Were any forks or clones made? | Privacy of a real person; U-C1 consent was never given for this | Make the repo private, purge history, tell the client in one plain sentence; treat the photo as exposed | Steve |
 
 ### Admin and access
 
@@ -141,6 +142,8 @@ Two things are left, and neither stops the plan-mode prompt. Both change what Ph
 
 ## 5. What I could not verify (say so, don't guess)
 
+- Whether **Next.js 14** still receives security fixes, and the exact patched version for the middleware authorization-bypass issue I recall (CVE-2025-29927, fixed in 14.2.25 per my memory).
+- What was in the `ias-build-template` repo beyond a README (I only had a description in `projects.csv`).
 - The exact weights and license of **Momo Trust Display** (the page confirmed the family is on Google Fonts; details did not load, GitHub was blocked).
 - Apple/Google developer program rules and costs, TestFlight internal-testing limits (tester caps, build expiry, whether the driver must be an App Store Connect user), the Play internal-testing equivalent, and any background-location plugin's behavior.
 - What Uber and Lyft charge for Black: neither publishes a flat Black rate. The SUV placeholder is anchored to third-party estimates (RideWise, TaxiFareFinder) that I could not verify.

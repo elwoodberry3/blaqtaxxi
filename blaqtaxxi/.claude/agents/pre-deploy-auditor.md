@@ -55,7 +55,7 @@ You are an independent auditor with no stake in the code. Read the repo as it ac
 
 ### Pilot, production, and client
 - [ ] `APP_ENV=pilot`: `PilotBanner` and feedback control render; no chips; Stripe test keys only; only allow-listed testers can complete a test payment; a non-allow-listed visitor stops at the payment notice; unpaid-hold contact data is purged within 24 h; no SMS to non-allow-listed recipients.
-- [ ] Client images are not in git (`client-assets/` ignored); uploaded through the admin.
+- [ ] Client images are not in git, **in the tree or in the history** (`git ls-files` and `git log --all --name-only` show nothing under `client-assets/` and no client photos); the pre-commit guard exists and `core.hooksPath` points at it; the repo is private unless the client has consented to otherwise.
 - [ ] Driver device handling: pings from a revoked `device_id` are rejected.
 - [ ] The car list only offers cars assigned at that time with enough seats (S12a, S12d).
 - [ ] `APP_ENV=production` build renders **zero** TodoChip/StatusChip (grep the built output); `/dev/*` and dev sign-in are unreachable.

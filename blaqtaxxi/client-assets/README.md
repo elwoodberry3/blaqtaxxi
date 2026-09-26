@@ -1,6 +1,8 @@
 # client-assets/
 
-Originals supplied by the client. **Everything in this folder except this README is gitignored.** Do not commit these files.
+**Keep the client's originals here locally. This folder is gitignored, and a pre-commit guard blocks it (`.githooks/pre-commit`). The scaffold does not ship the images. Never commit them, on any branch, in any repo, public or private (D-125).**
+
+Put these files in this folder on your own machine:
 
 | File | Where it goes |
 |---|---|

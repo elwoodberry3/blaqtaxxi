@@ -122,6 +122,9 @@ n8n/workflows/  tests/  docs/  .claude/
 15. **The wordmark PNG is 195×75 and opaque** (white background baked in, verified). It cannot sit on the navy header and looks soft on high-density screens. Use the reversed/transparent/SVG version once supplied (U-B4); until then, place it only on white.
 16. **Car photos supplied are manufacturer-style stock images.** Replace with the driver's real cars before the client's launch (U-B5); the Suburban is labeled an example.
 
+17. **Client images never go into git (D-125).** `client-assets/` is gitignored and a pre-commit guard blocks it; verify with `git ls-files` before every push. A public repo plus a real person's photo is a privacy incident.
+18. **Pin Next.js to the latest 14.2.x patch and never rely on middleware alone for authorization** (D-124).
+
 ## 9. Working agreement
 
 1. **Repo-first.** Read the actual current files before changing anything.

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Blocks committing client-supplied images (D-125).
+# Install: git config core.hooksPath .githooks
+set -euo pipefail
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+bad=""
+while IFS= read -r f; do
+  [ -z "$f" ] && continue
+  case "$f" in
+    client-assets/README.md) continue ;;
+    client-assets/*) bad="$bad\n  $f"; continue ;;
+  esac
+  # Images are only allowed under public/, docs/, native/ (app icons), and .claude/ (wireframes)
+  case "$f" in
+    *.jpg|*.jpeg|*.png|*.heic|*.webp|*.gif)
+      case "$f" in
+        public/*|docs/*|native/*|.claude/*) ;;
+        *) bad="$bad\n  $f" ;;
+      esac ;;
+  esac
+done <<< "$staged"
+
+if [ -n "$bad" ]; then
+  printf "Blocked: client images must never be committed (D-125):%b\n" "$bad"
+  echo "Keep them in client-assets/ (gitignored) and upload them through the admin."
+  echo "If a file is a legitimate app asset, put it under public/ (and confirm it is not a photo of a person)."
+  exit 1
+fi
