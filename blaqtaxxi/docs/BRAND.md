@@ -1,92 +1,97 @@
-# BRAND.md — design tokens (IAS system, swappable)
+# BRAND.md — BLAQ design tokens
 
-Source: `ias_color_system.csv` and the IAS brand rules. BLAQTAXXI is built as an **IAS demo** (D-70). A `brand.config.ts` seam lets the operator's own brand replace these tokens without touching components.
+**Source of truth:** `CLAUDE.layout.md` (imported by `CLAUDE.md`) and `.claude/skills/layout-system/`. This supersedes the earlier IAS-token version of this file: BLAQTAXXI is a client product and uses the client's palette. IAS branding appears only on course material, not in the app.
 
-> **Rule:** color is a splash, not a flood. **60 / 30 / 10** — 60% canvas, 30% brand, 10% accent.
+Contrast ratios below were **computed** (WCAG 2.x relative luminance), not estimated. AA needs 4.5:1 for normal text, 3:1 for large text and UI graphics.
 
-## Core tokens
+## Tokens (Tailwind `theme.extend.colors`)
 
-| Token | Hex | Use |
+| Token | Hex | Role |
 |---|---|---|
-| Deep Slate Teal `--ias-primary` | `#0A2E36` | Headers, nav, dark surfaces, CTA backgrounds (30%) |
-| Muted Seafoam `--ias-secondary` | `#3F7266` | Icons, dividers, secondary labels |
-| Kinetic Emerald `--ias-accent` | `#00E5A3` | CTAs, links, active states only (10%). **One use per view. Dark text only** |
-| Ink Blue-Gray `--ias-dark` | `#111827` | All body type, strong borders |
-| Pure Ash `--ias-light` | `#F9FAFB` | Page canvas, section fills, code blocks (60%) |
-| White `--ias-white` | `#FFFFFF` | Card fills, reversed type on dark |
-| Muted Gray `--ias-muted` | `#6B7280` | Captions, eyebrows, metadata |
-| Border Gray `--ias-mid` | `#E5E7EB` | Hairlines, dividers, input strokes |
+| `blaq-navy` | `#002244` | Primary: headers, driver card, headings |
+| `blaq-royal` | `#0072CE` | Accent: primary CTA, links, active pin, filled stars |
+| `blaq-green` | `#008752` | Success/confirm: trip confirmed, online |
+| `blaq-red` | `#862633` | Danger: cancel, no-show, sign out, cancelled. **Destructive/negative only** |
+| `blaq-gray` | `#8A9197` | Dividers, disabled, borders, decorative. **Not for text (see below)** |
+| `blaq-black` | `#000000` | Body text, icons |
+| `blaq-canvas` | `#F5F6F7` | Page background. *Assumed by the layout system, not confirmed (U-B1)* |
+| `blaq-white` | `#FFFFFF` | Cards, sheets, reversed text |
+| `blaq-gray-text` | `#686D71` | **Proposed** text gray: a darker shade of `blaq-gray`. Needs client approval (U-B1) |
 
-## Tints and shades
-
-| Group | Tokens |
-|---|---|
-| Primary | 50 `#E8F0F1` · 100 `#C1D5D9` · 400 `#4B7A8A` · 800 `#062028` · 950 `#030F12` |
-| Secondary | 50 `#E6F0EE` · 200 `#9BBEC0` · 400 `#5C8A8C` · 700 `#2A5047` · 900 `#1A3330` |
-| Accent | 600 `#00B882` (pressed CTA) · `rgba(0,229,163,0.04/0.05/0.15/0.30)` for selection, drag, ring, stroke |
-| Neutral | Disabled `#9CA3AF` · Body Gray `#374151` |
-
-## Approved foreground/background pairs (use only these)
-
-| Pair | FG on BG | Use |
-|---|---|---|
-| White on Primary | `#FFFFFF` / `#0A2E36` | Headers, nav, footers |
-| Emerald on Primary | `#00E5A3` / `#0A2E36` | CTAs on dark surfaces |
-| Primary on White | `#0A2E36` / `#FFFFFF` | Body, cards |
-| Primary on Emerald | `#0A2E36` / `#00E5A3` | CTA buttons, badges |
-| White on Seafoam | `#FFFFFF` / `#3F7266` | Icon fills, state indicators |
-| Seafoam on Tint | `#3F7266` / `#E6F0EE` | Pills, tags |
-| Ink on Ash | `#111827` / `#F9FAFB` | Code blocks, section fills |
-| Reversed Secondary | `#9BBEC0` / `#0A2E36` | Wordmark accent on dark |
-
-Never put Emerald text on white or Ash (it fails contrast). Emerald is a *fill* with Primary text, or text on Primary.
-
-## Type
-
-Space Grotesk (UI, headings) and Space Mono (times, ETAs, IDs, code). Load via a **runtime `<link>`**, with system fallbacks (`ui-sans-serif`, `ui-monospace`). Not `next/font/google` (see `CLAUDE.md` gotcha #3).
-
-Times and ETAs use tabular figures in Space Mono so digits don't jump as the countdown ticks.
-
-## CSS variable seam
-
-```css
-:root{
-  --ias-primary:#0A2E36; --ias-secondary:#3F7266; --ias-accent:#00E5A3;
-  --ias-dark:#111827; --ias-light:#F9FAFB; --ias-white:#FFFFFF;
-  --ias-muted:#6B7280; --ias-mid:#E5E7EB;
+```ts
+// tailwind.config.ts (extend)
+colors: {
+  'blaq-navy': '#002244', 'blaq-royal': '#0072CE', 'blaq-green': '#008752',
+  'blaq-red': '#862633', 'blaq-gray': '#8A9197', 'blaq-gray-text': '#686D71',
+  'blaq-black': '#000000', 'blaq-canvas': '#F5F6F7', 'blaq-white': '#FFFFFF',
 }
 ```
 
-Tailwind maps semantic names (`bg-brand`, `text-ink`, `bg-canvas`, `accent`) to these variables, so a future `brand.config.ts` only swaps the variable block.
+Use `100dvh`/`dvh` units rather than `vh` for map-plus-sheet layouts so mobile browser chrome does not clip the sheet.
 
-```ts
-// brand.config.ts (target shape)
-export const brand = {
-  name: 'BLAQTAXXI',                 // display name; IAS demo skin by default
-  tokens: { primary:'#0A2E36', secondary:'#3F7266', accent:'#00E5A3', dark:'#111827', light:'#F9FAFB' },
-  logo: null,                        // TodoChip until provided
-};
-```
+## Measured contrast (as used in the wireframes)
 
-## Status language (product states → tokens)
+| Pair | Ratio | Result |
+|---|---|---|
+| White on navy | 16.00 | Pass |
+| White on royal (primary CTA) | 4.89 | Pass |
+| White on green | 4.58 | Pass (narrow) |
+| White on red | 8.98 | Pass |
+| Black on canvas | 19.41 | Pass |
+| Navy on canvas | 14.79 | Pass |
+| Royal text on white | 4.89 | Pass |
+| Royal text on canvas | 4.52 | Pass (narrow; do not go smaller or lighter) |
+| Red text on white | 8.98 | Pass |
+| **Gray text on white** | **3.19** | **FAIL for text** (fine for 3:1 UI graphics like unfilled stars) |
+| **Gray text on canvas** | **2.95** | **FAIL** even for graphics |
+| **Green text on green/10 tint (success pill)** | **4.02** | **FAIL** |
+| Red text on red/10 tint (danger pill) | 7.55 | Pass |
+| Navy text on gray/15 tint (neutral pill) | 13.78 | Pass |
+| `blaq-gray-text` `#686D71` on white / canvas | 5.23 / 4.83 | Pass |
+
+### What fails in the supplied wireframes, and the fix
+
+| Where | Problem | Fix (no new brand color needed except the gray shade) |
+|---|---|---|
+| Addresses, dates, phone, placeholder text (`text-blaq-gray text-xs`) in home-map, trip-history, profile | 3.19 / 2.95 | Use `text-blaq-gray-text` (pending approval) for all gray **text**; keep `blaq-gray` for borders/dividers/disabled |
+| Success pill: `text-blaq-green` on `bg-blaq-green/10` | 4.02 | `bg-blaq-green/10 text-blaq-navy` with a green dot, or solid `bg-blaq-green text-blaq-white` (4.58) |
+| Map placeholder text | 2.95 | Real map replaces it; keep placeholder text at `blaq-gray-text` |
+
+## Status language (customer, driver, admin)
 
 | State | Treatment |
 |---|---|
-| Confirmed | Seafoam on Tint pill |
-| Countdown (before T-30) | Ink on Ash card, Space Mono time |
-| **Live** (T-30 → pickup) | The single Emerald use in the view: Primary-on-Emerald "Live" badge |
-| In progress | White on Seafoam |
-| Complete | Primary on White, receipt |
-| Late risk / error | **See gap below** |
+| Confirmed / paid | Success pill (navy text, green dot) |
+| Countdown (before T-30) | Navy on white card; time in a tabular-figures style |
+| Live (T-30 → arrival) | Driver card (navy) + royal pin + "Driver is 12 min away" |
+| During trip | Route line and car marker in royal; ETA in navy |
+| Complete | Green check, receipt |
+| Cancelled / no-show | Danger pill (red) |
+| **Running late / warning** | **No token exists.** Red is reserved for destructive actions, so do not use it for lateness. Until the client approves a warning color (U-B1): navy text + warning icon + explicit label ("Running about 5 min late"). Color is never the only carrier of meaning |
+| Demo/staging chips | Neutral gray pill. **Never rendered in production** |
 
-### Gap: the IAS palette has no warning or error color
+Color ratio: `blaq-navy` and `blaq-royal` together stay under about 30% of any screen; canvas and white are the majority surface.
 
-`ias_color_system.csv` defines no red/amber semantic tokens. Late-risk and error states need one. **Until Steve approves a warning/danger token pair**, use: Ink text, a leading icon, a text label ("Running 5 min late"), and a Primary-800 background. Do not invent a red. Logged as `D-73` in `DECISIONS.md`. Never rely on color alone to carry meaning.
+## Typography
+
+System font stack from the layout system unless the client supplies a brand font (U-B3). Times, ETAs, and prices use tabular figures so digits do not jump as the countdown ticks. Minimum 16 px body on the customer and driver surfaces; the wireframes' `text-xs` (12 px) is for metadata only, at `blaq-gray-text` or darker.
+
+## Maps
+
+Provider: **Google Maps** (stated). Map styling stays neutral so the royal route line and the navy/royal pins carry the signal. The wireframes' inline `style="top:40%; left:55%"` pins are placeholders and are replaced by real map markers. Demo mode renders a static placeholder map, labeled as demo.
+
+## Naming and provenance
+
+The source palette's color names appear to come from a football team's palette. The hex values are just colors, but do not use the team's name, logo, or imagery in the app, the repo copy, or the course, and confirm the palette is the client's own intended brand (U-B1). Token names stay `blaq-*`.
 
 ## Voice
 
-Direct, clear, technical, honest, demonstrable. "Here's what I built," not "I'm passionate about." No corporate polish, no buzzwords, no fabricated ratings or testimonials. Rider-facing copy is plain and short: *"Driver is 12 min away."* *"Pickup in 32 h 10 m."*
+Direct, clear, short. Customer copy: "Driver is 12 min away." "Pickup in 32 h 10 m." "Check back 30 minutes before your pickup to see where your driver is." No corporate polish, no buzzwords, no invented reviews or ratings.
 
-## Accessibility
+## Accessibility (measured requirements)
 
-WCAG AA contrast on every approved pair. Focus rings on all interactive elements (Emerald ring on dark, Primary ring on light). ETA changes announced via `aria-live="polite"`. Minimum 44 px touch targets on the driver console (he'll be tapping while parked, in daylight).
+- WCAG AA on every pair above; icon-only buttons need `aria-label`; the map region needs a text alternative and a text ETA beside it.
+- Focus rings on all interactive elements (royal ring on light, white ring on navy).
+- ETA changes announced with `aria-live="polite"`, not on every tick.
+- Rating is an accessible radio group, not styled `span`s.
+- Touch targets at least 44 px on `/drive` and `/admin`.

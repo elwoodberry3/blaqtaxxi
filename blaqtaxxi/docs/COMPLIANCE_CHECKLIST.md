@@ -1,6 +1,8 @@
 # COMPLIANCE_CHECKLIST.md — verify before any real launch
 
-**Status: UNVERIFIED. This is a list of questions, not answers, and not legal advice.** I don't know the current state of these rules and have not confirmed any of them. Everything below needs to be checked with a licensed attorney, the insurer, and the relevant agencies. For the **course demo** (fake data, test-mode payments, no real riders) none of this blocks the build; for a **real launch** all of it does.
+**Status: UNVERIFIED. This is a list of questions, not answers, and not legal advice.** I don't know the current state of these rules and have not confirmed any of them. Everything below needs to be checked with a licensed attorney, the insurer, and the relevant agencies.
+
+**BLAQTAXXI is a production build for a paying client, so this checklist is a launch gate** (Phase 9, D-100), not a lesson. The course demo (fake data, test payments) is unaffected, but no public launch happens until each item is signed off. Owners are in `docs/UNKNOWNS.md` (U-G1, U-G2).
 
 Claude Code must not describe any item here as settled, and must not claim the product is "compliant" or "licensed."
 
@@ -46,7 +48,14 @@ Claude Code must not describe any item here as settled, and must not claim the p
 - [ ] Rider safety features (share-my-trip, emergency contact) — not in MVP; decide whether a real launch needs them.
 - [ ] Incident and complaint process.
 
-## 8. Claims and marketing copy
+## 8. Client, ownership, and publishing
+
+- [ ] Written agreement covering who owns the code, domain (`www.blaqtaxxi.com`), hosting, Google, and Stripe accounts after handoff (U-C1).
+- [ ] The client's consent before any episode shows his brand, pricing, transcript, or data, and before any case study is published (D-101).
+- [ ] The live Stripe account belongs to the client (D-103).
+- [ ] Support, incident contact, and maintenance responsibilities after launch (U-C3).
+
+## 9. Claims and marketing copy
 
 - [ ] Do not claim "licensed," "insured," "safe," or "verified" anywhere in the UI unless it is true and documented.
 - [ ] No fabricated reviews, ratings, ride counts, or testimonials (project brand rule).

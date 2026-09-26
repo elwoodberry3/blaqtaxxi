@@ -1,0 +1,19 @@
+<!-- Brand Standard Section: Fare Breakdown — .claude/skills/layout-system/wireframes/sections/fare-breakdown.html
+     Purpose: itemized fare list. Confirmed pricing model: flat rate in-area, tiered rate
+     for longer trips (see project notes) — never show a surge / dynamic-pricing line,
+     this app does not use dynamic pricing. -->
+
+<div data-section="fare-breakdown" class="divide-y divide-blaq-gray/15">
+  <div class="flex justify-between py-2 text-sm">
+    <span class="text-blaq-black" data-slot="line-label">[e.g. Base fare]</span>
+    <span class="text-blaq-black font-medium" data-slot="line-value">[$0.00]</span>
+  </div>
+  <div class="flex justify-between py-2 text-sm">
+    <span class="text-blaq-black" data-slot="line-label">[e.g. Distance / time tier]</span>
+    <span class="text-blaq-black font-medium" data-slot="line-value">[$0.00]</span>
+  </div>
+  <div class="flex justify-between pt-3 text-base">
+    <span class="text-blaq-navy font-bold" data-slot="total-label">Total</span>
+    <span class="text-blaq-navy font-bold" data-slot="total-value">[$0.00]</span>
+  </div>
+</div>

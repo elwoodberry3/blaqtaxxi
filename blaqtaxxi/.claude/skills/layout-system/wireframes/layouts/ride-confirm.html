@@ -1,0 +1,49 @@
+<!-- Brand Standard Layout: Ride Confirm — .claude/skills/layout-system/wireframes/layouts/ride-confirm.html
+     Purpose: pickup/dropoff locked, fare shown before booking. One fare shown at a time —
+     never a list of ride-tier options (this is a one-fare app, not multi-tier like Uber/Lyft).
+     Nearest-layout match for: "confirm ride", "review fare", "book now screen". -->
+
+<main data-layout="ride-confirm" class="pb-24">
+
+  <div data-section="map-header" class="relative w-full h-[35vh] bg-blaq-gray/20 flex items-center justify-center">
+    <span class="text-blaq-gray text-xs" data-slot="map-placeholder">[Route preview — pickup to dropoff]</span>
+    <button type="button" class="absolute top-4 left-4 w-10 h-10 rounded-full bg-blaq-white shadow flex items-center justify-center text-blaq-navy" data-slot="back-control">&#8592;</button>
+  </div>
+
+  <div data-section="bottom-sheet" class="relative -mt-6 bg-blaq-white rounded-t-3xl min-h-[65vh] px-5 pt-3 pb-6">
+    <div class="w-10 h-1.5 rounded-full bg-blaq-gray/40 mx-auto mb-4" data-slot="drag-handle"></div>
+
+    <div class="space-y-2 mb-4" data-slot="trip-points">
+      <div class="flex items-center gap-3">
+        <span class="w-2 h-2 rounded-full bg-blaq-royal"></span>
+        <span class="text-blaq-black text-sm" data-slot="pickup">[Pickup address]</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="w-2 h-2 rounded-full bg-blaq-navy"></span>
+        <span class="text-blaq-black text-sm" data-slot="dropoff">[Dropoff address]</span>
+      </div>
+    </div>
+
+    <div class="bg-blaq-canvas rounded-2xl p-4 mb-4" data-slot="fare-card">
+      <!-- sections/fare-breakdown.html -->
+      <div data-section="fare-breakdown" class="divide-y divide-blaq-gray/15">
+        <div class="flex justify-between py-2 text-sm">
+          <span class="text-blaq-black" data-slot="line-label">[Flat rate — in DFW]</span>
+          <span class="text-blaq-black font-medium" data-slot="line-value">[$0.00]</span>
+        </div>
+        <div class="flex justify-between pt-3 text-base">
+          <span class="text-blaq-navy font-bold" data-slot="total-label">Total</span>
+          <span class="text-blaq-navy font-bold" data-slot="total-value">[$0.00]</span>
+        </div>
+      </div>
+    </div>
+
+    <span data-component="pill-badge" data-variant="neutral" class="inline-flex items-center gap-1 rounded-full bg-blaq-gray/15 text-blaq-navy text-xs font-semibold px-3 py-1 mb-4" data-slot="fare-note">
+      [Flat rate · no surge]
+    </span>
+
+    <button type="button" class="w-full rounded-full bg-blaq-royal text-blaq-white font-semibold text-base py-4" data-slot="cta">
+      [Book ride]
+    </button>
+  </div>
+</main>

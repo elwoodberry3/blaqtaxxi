@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BLAQ — layout-system preview</title>
+<link rel="stylesheet" href="../../.claude/skills/layout-system/wireframes/tokens.css" />
+<style>
+  body { background: #E9EBEC; padding: 40px 20px; }
+  .gallery-header { max-width: 1200px; margin: 0 auto 32px; }
+  .gallery-header h1 { color: var(--blaq-navy); font-size: 24px; font-weight: 700; margin: 0 0 6px; }
+  .gallery-header p { color: var(--blaq-gray); font-size: 14px; margin: 0; }
+  .grid { display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; max-width: 1200px; margin: 0 auto; }
+  .frame-block { text-align: center; }
+  .frame-block .frame-label { color: var(--blaq-navy); font-weight: 700; font-size: 13px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .fixed-nav-note { font-size: 11px; color: var(--blaq-gray); margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<div class="gallery-header">
+  <h1>BLAQ (Blaqtaxxi) — layout-system preview</h1>
+  <p>All 6 layouts, rendered at mobile width. This file is a preview only — it is not part of what gets installed into the project.</p>
+</div>
+
+<div class="grid">
+
+  <div class="frame-block">
+    <div class="frame-label">home-map</div>
+    <div class="blaq-frame">
+      <main data-layout="home-map" class="pb-24">
+        <div data-section="map-header" class="relative w-full h-[45vh] bg-blaq-gray/20 flex items-center justify-center" style="height:45vh;background:rgba(138,145,151,0.2);display:flex;align-items:center;justify-content:center;position:relative;">
+          <span class="text-blaq-gray text-xs" style="color:var(--blaq-gray);font-size:12px;">[Map view — current location]</span>
+          <button type="button" style="position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:9999px;background:var(--blaq-white);box-shadow:0 1px 4px rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;color:var(--blaq-navy);border:none;">&#9776;</button>
+        </div>
+        <div style="position:relative;margin-top:-24px;background:var(--blaq-white);border-radius:24px 24px 0 0;min-height:280px;padding:12px 20px 24px;">
+          <div style="width:40px;height:6px;border-radius:9999px;background:rgba(138,145,151,0.4);margin:0 auto 16px;"></div>
+          <h1 style="color:var(--blaq-navy);font-weight:700;font-size:18px;margin:0 0 16px;">Where to?</h1>
+          <button type="button" style="width:100%;display:flex;align-items:center;gap:12px;border-radius:12px;border:1px solid rgba(138,145,151,0.3);padding:12px 16px;margin-bottom:12px;background:none;text-align:left;">
+            <span style="width:8px;height:8px;border-radius:9999px;background:var(--blaq-royal);"></span>
+            <span style="color:var(--blaq-gray);font-size:14px;">Enter destination</span>
+          </button>
+          <div style="display:flex;align-items:center;gap:12px;padding:8px 0 16px;">
+            <span style="width:36px;height:36px;border-radius:9999px;background:rgba(0,34,68,0.1);display:flex;align-items:center;justify-content:center;color:var(--blaq-navy);font-size:12px;">&#8962;</span>
+            <div>
+              <p style="color:var(--blaq-black);font-size:14px;font-weight:600;margin:0;">Home</p>
+              <p style="color:var(--blaq-gray);font-size:12px;margin:0;">Saved address</p>
+            </div>
+          </div>
+          <button type="button" style="width:100%;border-radius:9999px;background:var(--blaq-royal);color:var(--blaq-white);font-weight:600;font-size:15px;padding:14px;border:none;">Confirm pickup</button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="frame-block">
+    <div class="frame-label">ride-confirm</div>
+    <div class="blaq-frame">
+      <main class="pb-24">
+        <div style="height:35vh;background:rgba(138,145,151,0.2);display:flex;align-items:center;justify-content:center;position:relative;">
+          <span style="color:var(--blaq-gray);font-size:12px;">[Route preview]</span>
+          <button type="button" style="position:absolute;top:16px;left:16px;width:40px;height:40px;border-radius:9999px;background:var(--blaq-white);box-shadow:0 1px 4px rgba(0,0,0,0.15);border:none;color:var(--blaq-navy);">&#8592;</button>
+        </div>
+        <div style="position:relative;margin-top:-24px;background:var(--blaq-white);border-radius:24px 24px 0 0;min-height:380px;padding:12px 20px 24px;">
+          <div style="width:40px;height:6px;border-radius:9999px;background:rgba(138,145,151,0.4);margin:0 auto 16px;"></div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+            <span style="width:8px;height:8px;border-radius:9999px;background:var(--blaq-royal);"></span>
+            <span style="color:var(--blaq-black);font-size:14px;">Pickup address</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+            <span style="width:8px;height:8px;border-radius:9999px;background:var(--blaq-navy);"></span>
+            <span style="color:var(--blaq-black);font-size:14px;">Dropoff address</span>
+          </div>
+          <div style="background:var(--blaq-canvas);border-radius:16px;padding:16px;margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:14px;color:var(--blaq-black);">
+              <span>Flat rate — in DFW</span><span style="font-weight:600;">$20.00</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding-top:12px;font-size:16px;border-top:1px solid rgba(138,145,151,0.15);">
+              <span style="color:var(--blaq-navy);font-weight:700;">Total</span><span style="color:var(--blaq-navy);font-weight:700;">$20.00</span>
+            </div>
+          </div>
+          <span style="display:inline-flex;align-items:center;border-radius:9999px;background:rgba(138,145,151,0.15);color:var(--blaq-navy);font-size:11px;font-weight:600;padding:4px 12px;margin-bottom:16px;">Flat rate · no surge</span>
+          <button type="button" style="width:100%;border-radius:9999px;background:var(--blaq-royal);color:var(--blaq-white);font-weight:600;font-size:15px;padding:14px;border:none;">Book ride</button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="frame-block">
+    <div class="frame-label">active-trip</div>
+    <div class="blaq-frame">
+      <main>
+        <div style="height:55vh;background:rgba(138,145,151,0.2);display:flex;align-items:center;justify-content:center;position:relative;">
+          <span style="color:var(--blaq-gray);font-size:12px;">[Live map]</span>
+          <div style="position:absolute;width:16px;height:16px;border-radius:9999px;background:var(--blaq-royal);border:2px solid var(--blaq-white);top:40%;left:55%;"></div>
+        </div>
+        <div style="position:relative;margin-top:-24px;background:var(--blaq-white);border-radius:24px 24px 0 0;min-height:220px;padding:12px 20px 24px;">
+          <div style="width:40px;height:6px;border-radius:9999px;background:rgba(138,145,151,0.4);margin:0 auto 16px;"></div>
+          <span style="display:inline-flex;align-items:center;gap:6px;border-radius:9999px;background:rgba(0,135,82,0.1);color:var(--blaq-green);font-size:11px;font-weight:600;padding:4px 12px;margin-bottom:12px;">
+            <span style="width:6px;height:6px;border-radius:9999px;background:var(--blaq-green);"></span> Driver en route
+          </span>
+          <div style="background:var(--blaq-navy);border-radius:16px;padding:16px;display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+            <div style="width:48px;height:48px;border-radius:9999px;background:rgba(255,255,255,0.2);"></div>
+            <div style="flex:1;">
+              <p style="color:var(--blaq-white);font-weight:600;font-size:14px;margin:0;">Driver Name</p>
+              <p style="color:rgba(255,255,255,0.7);font-size:12px;margin:0;">Silver Camry · BLQ 4471</p>
+            </div>
+            <p style="color:var(--blaq-white);font-size:12px;margin:0;">4 min</p>
+          </div>
+          <div style="display:flex;gap:12px;">
+            <button type="button" style="flex:1;border-radius:9999px;border:1px solid var(--blaq-gray);color:var(--blaq-navy);font-weight:600;font-size:13px;padding:12px;background:var(--blaq-white);">Message</button>
+            <button type="button" style="flex:1;border-radius:9999px;background:var(--blaq-red);color:var(--blaq-white);font-weight:600;font-size:13px;padding:12px;border:none;">Cancel ride</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="frame-block">
+    <div class="frame-label">fare-summary</div>
+    <div class="blaq-frame">
+      <main style="padding:32px 20px 24px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:9999px;background:rgba(0,135,82,0.1);color:var(--blaq-green);font-size:24px;margin-bottom:12px;">&#10003;</span>
+          <h1 style="color:var(--blaq-navy);font-weight:700;font-size:18px;margin:0;">Trip complete</h1>
+        </div>
+        <div style="background:var(--blaq-canvas);border-radius:16px;padding:16px;margin-bottom:24px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:14px;color:var(--blaq-black);"><span>Base fare</span><span style="font-weight:600;">$15.00</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:14px;color:var(--blaq-black);border-top:1px solid rgba(138,145,151,0.15);"><span>Distance / time tier</span><span style="font-weight:600;">$5.00</span></div>
+          <div style="display:flex;justify-content:space-between;padding-top:12px;font-size:16px;border-top:1px solid rgba(138,145,151,0.15);"><span style="color:var(--blaq-navy);font-weight:700;">Total charged</span><span style="color:var(--blaq-navy);font-weight:700;">$20.00</span></div>
+        </div>
+        <div style="text-align:center;margin-bottom:24px;">
+          <p style="color:var(--blaq-black);font-size:14px;font-weight:600;margin:0 0 8px;">Rate your driver</p>
+          <div style="display:flex;gap:4px;justify-content:center;">
+            <span style="color:var(--blaq-gray);font-size:26px;">&#9733;</span><span style="color:var(--blaq-gray);font-size:26px;">&#9733;</span><span style="color:var(--blaq-gray);font-size:26px;">&#9733;</span><span style="color:var(--blaq-gray);font-size:26px;">&#9733;</span><span style="color:var(--blaq-gray);font-size:26px;">&#9733;</span>
+          </div>
+        </div>
+        <button type="button" style="width:100%;border-radius:9999px;background:var(--blaq-royal);color:var(--blaq-white);font-weight:600;font-size:15px;padding:14px;border:none;">Done</button>
+      </main>
+    </div>
+  </div>
+
+  <div class="frame-block">
+    <div class="frame-label">trip-history</div>
+    <div class="blaq-frame">
+      <main style="padding:24px 20px;">
+        <h1 style="color:var(--blaq-navy);font-weight:700;font-size:18px;margin:0 0 16px;">Your trips</h1>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="background:var(--blaq-white);border-radius:16px;padding:16px;border:1px solid rgba(138,145,151,0.15);display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <p style="color:var(--blaq-black);font-size:14px;font-weight:600;margin:0;">Destination address</p>
+              <p style="color:var(--blaq-gray);font-size:12px;margin:0 0 4px;">Sep 24 · 6:40 PM</p>
+              <span style="display:inline-flex;border-radius:9999px;background:rgba(0,135,82,0.1);color:var(--blaq-green);font-size:11px;font-weight:600;padding:2px 10px;">Completed</span>
+            </div>
+            <span style="color:var(--blaq-navy);font-weight:700;font-size:14px;">$20.00</span>
+          </div>
+          <div style="background:var(--blaq-white);border-radius:16px;padding:16px;border:1px solid rgba(138,145,151,0.15);display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <p style="color:var(--blaq-black);font-size:14px;font-weight:600;margin:0;">Destination address</p>
+              <p style="color:var(--blaq-gray);font-size:12px;margin:0 0 4px;">Sep 20 · 11:05 AM</p>
+              <span style="display:inline-flex;border-radius:9999px;background:rgba(134,38,51,0.1);color:var(--blaq-red);font-size:11px;font-weight:600;padding:2px 10px;">Cancelled</span>
+            </div>
+            <span style="color:var(--blaq-gray);font-weight:700;font-size:14px;">&mdash;</span>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="frame-block">
+    <div class="frame-label">profile</div>
+    <div class="blaq-frame">
+      <main style="padding:32px 20px 24px;">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+          <div style="width:64px;height:64px;border-radius:9999px;background:rgba(0,34,68,0.1);"></div>
+          <div>
+            <p style="color:var(--blaq-navy);font-weight:700;font-size:15px;margin:0;">Rider Name</p>
+            <p style="color:var(--blaq-gray);font-size:12px;margin:0;">Phone on file</p>
+          </div>
+        </div>
+        <div>
+          <button type="button" style="width:100%;display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(138,145,151,0.15);background:none;border-left:none;border-right:none;border-top:none;text-align:left;"><span style="color:var(--blaq-black);font-size:14px;">Payment method</span><span style="color:var(--blaq-gray);">&rsaquo;</span></button>
+          <button type="button" style="width:100%;display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(138,145,151,0.15);background:none;border-left:none;border-right:none;border-top:none;text-align:left;"><span style="color:var(--blaq-black);font-size:14px;">Saved places</span><span style="color:var(--blaq-gray);">&rsaquo;</span></button>
+          <button type="button" style="width:100%;display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(138,145,151,0.15);background:none;border-left:none;border-right:none;border-top:none;text-align:left;"><span style="color:var(--blaq-black);font-size:14px;">Notifications</span><span style="color:var(--blaq-gray);">&rsaquo;</span></button>
+        </div>
+        <button type="button" style="width:100%;border-radius:9999px;background:var(--blaq-red);color:var(--blaq-white);font-weight:600;font-size:15px;padding:14px;border:none;margin-top:32px;">Sign out</button>
+      </main>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

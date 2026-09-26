@@ -13,7 +13,9 @@ A booking is valid only if
 `prev.end + travel(prev.endPlace → new.pickup, departing prev.end) + buffer <= new.pickupAt`
 **and**
 `new.plannedEnd + travel(new.dropoff → next.startPlace, departing new.plannedEnd) + buffer <= next.startAt`,
-inside the availability window, with no overlap. Equality passes.
+with no overlap, and the pickup no later than that date's cutoff. Equality passes.
+
+**Cutoff rule (D-09):** the driver's end time limits when a ride may *start*; a ride that starts before it may finish after it. The day window comes from a per-date override (D-44) if one exists, else the default 05:00–24:00. A shortened day never cancels rides already booked (D-45).
 
 ## Workflow (always)
 
@@ -52,7 +54,9 @@ inside the availability window, with no overlap. Equality passes.
 
 ## Pricing
 
-- Tiers from the off-peak **reference** duration: ≤30 → $20, >30–45 → $25, >45 → $30 (D-07). Price never depends on the hour. Cents only.
+- A **`PriceConfig` belongs to a car** (D-80/D-81): ordered tiers `{upToMinutes | null, cents}` on the off-peak **reference** duration; first tier with `upToMinutes >= minutes` wins. Defaults ≤30 → $20, >30–45 → $25, >45 → $30. Never hardcode an amount; load it from config (`docs/fixtures/vehicles.json` on `demo`). Price never depends on the hour. Cents only.
+- Feasibility is **car-independent** (the resource is the driver, D-83); the car only sets price and display.
+- Configs are **versioned**; a booking snapshots `price_config_id` + `version`. Test P7.
 
 ## Common mistakes to avoid
 

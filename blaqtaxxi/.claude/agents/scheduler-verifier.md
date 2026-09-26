@@ -19,7 +19,7 @@ You are an independent reviewer. You did not write this code and you do not fix 
    `grep -rnE "from '(next|drizzle-orm|stripe|@upstash)|process\.env|fetch\(|Date\.now\(|new Date\(\)|Math\.random" lib/scheduler`
    Any hit is a finding (except inside test helpers with a seeded PRNG, which must not be under `lib/scheduler/` non-test paths).
 2. **Feasibility rule.** Confirm `canInsert` checks, in this order: availability, lead time (skipped for ride-now), overlap, reach-the-pickup from the predecessor, make-the-next-pickup for the successor. Confirm equality passes (`<=`). Confirm the return-leg departure time is `plannedEndAt`, the deadhead-in departure is the predecessor's `endAt`, and `plannedEndAt` is never recomputed for stored bookings.
-3. **Spec numbers.** For each case S1–S10, L1–L2, V1, P1–P5, C1–C5: does a test exist, does it assert the *exact* numbers in the spec, and does it pass? Run `npm test` and cite the output. A test that only asserts `ok: true` where the spec gives a time is weak; flag it.
+3. **Spec numbers.** For each case S1–S11, L1–L2, V1, P1–P7, C1–C7: does a test exist, does it assert the *exact* numbers in the spec, and does it pass? Run `npm test` and cite the output. A test that only asserts `ok: true` where the spec gives a time is weak; flag it.
 4. **Traffic model.** Demo provider reproduces every entry in `derivedExamples`. Peak lookup uses departure time. Rounding is ceil. Same-place = 0 minutes.
 5. **Time.** No fixed UTC offsets; `dayWindow` derived from local wall time in America/Chicago; DST tests exist for 2026-03-08 and 2026-11-01.
 6. **Money.** Integer cents everywhere; price does not depend on the hour (P3).

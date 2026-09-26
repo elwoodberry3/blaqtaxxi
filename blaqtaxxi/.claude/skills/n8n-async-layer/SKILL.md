@@ -9,7 +9,7 @@ n8n Cloud: `https://iautomateshit.app.n8n.cloud`. It owns the **async layer only
 
 ## What belongs in n8n
 
-Booking-confirmed message · T-30 reminder · late-risk notice · no-show follow-up · daily Slack digest · optional HubSpot sync. Nothing else.
+Booking-confirmed message (**delivers the customer link**; the link is a secret, never log it or post it to Slack) · T-30 reminder · late-risk notice · no-show follow-up · daily Slack digest · optional HubSpot sync. Nothing else.
 
 ## What never goes in n8n
 

@@ -1,0 +1,15 @@
+<!-- Brand Standard Component: Buttons — .claude/skills/layout-system/wireframes/components/buttons.html
+     Purpose: primary (booking / confirm actions) and secondary (cancel / back) buttons.
+     Rule: blaq-red is reserved for destructive confirm only — never a default action color. -->
+
+<button type="button" data-component="button-primary" class="w-full rounded-full bg-blaq-royal text-blaq-white font-semibold text-base py-4 active:opacity-90">
+  <span data-slot="label">[Primary Action Label]</span>
+</button>
+
+<button type="button" data-component="button-secondary" class="w-full rounded-full border border-blaq-gray text-blaq-navy font-semibold text-base py-4 bg-blaq-white">
+  <span data-slot="label">[Secondary Action Label]</span>
+</button>
+
+<button type="button" data-component="button-destructive" class="w-full rounded-full bg-blaq-red text-blaq-white font-semibold text-base py-4">
+  <span data-slot="label">[Destructive Action Label — e.g. Cancel ride]</span>
+</button>

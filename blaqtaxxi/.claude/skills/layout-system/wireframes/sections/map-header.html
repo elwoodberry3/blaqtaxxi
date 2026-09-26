@@ -1,0 +1,16 @@
+<!-- Brand Standard Section: Map Header — .claude/skills/layout-system/wireframes/sections/map-header.html
+     Purpose: full-bleed map area behind the bottom sheet, Lyft-like. Placeholder block
+     stands in for the real map component (Google Maps / Mapbox — not decided here). -->
+
+<div data-section="map-header" class="relative w-full h-[45vh] bg-blaq-gray/20 flex items-center justify-center">
+  <span class="text-blaq-gray text-xs" data-slot="map-placeholder">[Map view — driver + rider pins]</span>
+
+  <!-- top-left back/menu control -->
+  <button type="button" class="absolute top-4 left-4 w-10 h-10 rounded-full bg-blaq-white shadow flex items-center justify-center text-blaq-navy" data-slot="back-control">
+    &#8592;
+  </button>
+
+  <!-- single driver pin — this app has exactly one driver, never a cluster of pins -->
+  <div class="absolute w-4 h-4 rounded-full bg-blaq-royal border-2 border-blaq-white" data-slot="driver-pin" style="top:40%; left:55%;"></div>
+  <div class="absolute w-3 h-3 rounded-full bg-blaq-navy" data-slot="rider-pin" style="top:60%; left:45%;"></div>
+</div>

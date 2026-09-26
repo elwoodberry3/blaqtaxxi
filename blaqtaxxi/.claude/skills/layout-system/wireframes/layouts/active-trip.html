@@ -1,0 +1,42 @@
+<!-- Brand Standard Layout: Active Trip — .claude/skills/layout-system/wireframes/layouts/active-trip.html
+     Purpose: live tracking screen, driver en route or trip in progress. Always exactly
+     one driver-card — never a driver-selection list. Cancel is destructive (blaq-red).
+     Nearest-layout match for: "driver on the way", "trip in progress", "live tracking". -->
+
+<main data-layout="active-trip" class="pb-6">
+
+  <div data-section="map-header" class="relative w-full h-[55vh] bg-blaq-gray/20 flex items-center justify-center">
+    <span class="text-blaq-gray text-xs" data-slot="map-placeholder">[Live map — driver + rider position]</span>
+    <div class="absolute w-4 h-4 rounded-full bg-blaq-royal border-2 border-blaq-white" data-slot="driver-pin" style="top:40%; left:55%;"></div>
+  </div>
+
+  <div data-section="bottom-sheet" class="relative -mt-6 bg-blaq-white rounded-t-3xl min-h-[45vh] px-5 pt-3 pb-6">
+    <div class="w-10 h-1.5 rounded-full bg-blaq-gray/40 mx-auto mb-4" data-slot="drag-handle"></div>
+
+    <span data-component="pill-badge" data-variant="success" class="inline-flex items-center gap-1 rounded-full bg-blaq-green/10 text-blaq-green text-xs font-semibold px-3 py-1 mb-3">
+      <span class="w-1.5 h-1.5 rounded-full bg-blaq-green"></span>
+      <span data-slot="status-label">[Driver en route]</span>
+    </span>
+
+    <!-- components/driver-card.html -->
+    <div data-component="driver-card" class="bg-blaq-navy rounded-2xl p-4 flex items-center gap-3 mb-4">
+      <div class="w-12 h-12 rounded-full bg-blaq-white/20" data-slot="driver-photo"></div>
+      <div class="flex-1">
+        <p class="text-blaq-white font-semibold text-sm" data-slot="driver-name">[Driver Name]</p>
+        <p class="text-blaq-white/70 text-xs" data-slot="vehicle">[Vehicle — make, model, plate]</p>
+      </div>
+      <div class="text-right">
+        <p class="text-blaq-white text-xs" data-slot="eta">[ETA]</p>
+      </div>
+    </div>
+
+    <div class="flex gap-3">
+      <button type="button" class="flex-1 rounded-full border border-blaq-gray text-blaq-navy font-semibold text-sm py-3 bg-blaq-white" data-slot="message-driver">
+        [Message]
+      </button>
+      <button type="button" class="flex-1 rounded-full bg-blaq-red text-blaq-white font-semibold text-sm py-3" data-slot="cancel-ride">
+        [Cancel ride]
+      </button>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,43 @@
+<!-- Brand Standard Layout: Home / Map — .claude/skills/layout-system/wireframes/layouts/home-map.html
+     Purpose: default landing screen. Rider sets pickup/dropoff. Map-first, per Lyft-like
+     direction. Composed from sections/map-header.html + sections/bottom-sheet.html.
+     Nearest-layout match for: "home screen", "book a ride", "where to". -->
+
+<main data-layout="home-map" class="pb-24">
+
+  <!-- sections/map-header.html -->
+  <div data-section="map-header" class="relative w-full h-[45vh] bg-blaq-gray/20 flex items-center justify-center">
+    <span class="text-blaq-gray text-xs" data-slot="map-placeholder">[Map view — current location]</span>
+    <button type="button" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-blaq-white shadow flex items-center justify-center text-blaq-navy" data-slot="menu-control">&#9776;</button>
+  </div>
+
+  <!-- sections/bottom-sheet.html -->
+  <div data-section="bottom-sheet" class="relative -mt-6 bg-blaq-white rounded-t-3xl min-h-[55vh] px-5 pt-3 pb-6">
+    <div class="w-10 h-1.5 rounded-full bg-blaq-gray/40 mx-auto mb-4" data-slot="drag-handle"></div>
+
+    <h1 class="text-blaq-navy font-bold text-lg mb-4" data-slot="heading">[Where to?]</h1>
+
+    <button type="button" data-slot="destination-input" class="w-full flex items-center gap-3 rounded-xl border border-blaq-gray/30 px-4 py-3 mb-3">
+      <span class="w-2 h-2 rounded-full bg-blaq-royal"></span>
+      <span class="text-blaq-gray text-sm">[Enter destination]</span>
+    </button>
+
+    <div data-slot="saved-places" class="space-y-2 mb-4">
+      <!-- components/list-item pattern, repeat per saved place -->
+      <div class="flex items-center gap-3 py-2" data-slot="saved-place-item">
+        <span class="w-9 h-9 rounded-full bg-blaq-navy/10 flex items-center justify-center text-blaq-navy text-xs">&#8962;</span>
+        <div>
+          <p class="text-blaq-black text-sm font-medium" data-slot="place-label">[Home]</p>
+          <p class="text-blaq-gray text-xs" data-slot="place-address">[Saved address]</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- components/buttons.html — button-primary -->
+    <button type="button" class="w-full rounded-full bg-blaq-royal text-blaq-white font-semibold text-base py-4" data-slot="cta">
+      [Confirm pickup]
+    </button>
+  </div>
+
+  <!-- components/bottom-nav.html renders fixed at the app shell level, not per-page -->
+</main>

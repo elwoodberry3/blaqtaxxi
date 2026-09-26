@@ -1,0 +1,109 @@
+{
+  "system": "BLAQ (Blaqtaxxi) layout-system",
+  "version": "1.0.0",
+  "purpose": "Index of every wireframe in this library. Read this file first, match the requested screen to the nearest entry, then read only that file. Do not read the full wireframes/ tree up front.",
+  "tokens_file": "wireframes/tokens.css",
+  "layouts": [
+    {
+      "name": "home-map",
+      "path": "wireframes/layouts/home-map.html",
+      "purpose": "Default landing screen. Rider sets pickup/destination, map-first.",
+      "when_to_use": ["home screen", "book a ride", "where to", "landing screen", "new booking"],
+      "composed_from": ["sections/map-header.html", "sections/bottom-sheet.html"],
+      "slots": ["heading", "destination-input", "saved-places", "cta"]
+    },
+    {
+      "name": "ride-confirm",
+      "path": "wireframes/layouts/ride-confirm.html",
+      "purpose": "Pickup/dropoff locked in, single fare shown, one Book action. Never show multiple ride-tier options — this is a one-fare app.",
+      "when_to_use": ["confirm ride", "review fare before booking", "book now screen"],
+      "composed_from": ["sections/map-header.html", "sections/bottom-sheet.html", "sections/fare-breakdown.html", "components/pill-badge.html", "components/buttons.html"],
+      "slots": ["pickup", "dropoff", "fare-card", "fare-note", "cta"]
+    },
+    {
+      "name": "active-trip",
+      "path": "wireframes/layouts/active-trip.html",
+      "purpose": "Live tracking — driver en route or trip in progress. Always exactly one driver-card.",
+      "when_to_use": ["driver on the way", "trip in progress", "live tracking", "en route screen"],
+      "composed_from": ["sections/map-header.html", "sections/bottom-sheet.html", "components/driver-card.html", "components/pill-badge.html"],
+      "slots": ["status-label", "driver-name", "vehicle", "eta", "message-driver", "cancel-ride"]
+    },
+    {
+      "name": "fare-summary",
+      "path": "wireframes/layouts/fare-summary.html",
+      "purpose": "End-of-trip receipt and driver rating.",
+      "when_to_use": ["trip complete", "receipt", "rate your driver", "post-ride screen"],
+      "composed_from": ["sections/fare-breakdown.html", "components/rating-stars.html", "components/buttons.html"],
+      "slots": ["heading", "fare-card", "rating-prompt", "cta"]
+    },
+    {
+      "name": "trip-history",
+      "path": "wireframes/layouts/trip-history.html",
+      "purpose": "List of past trips, most recent first. No map.",
+      "when_to_use": ["past rides", "trip history", "activity tab", "receipts list"],
+      "composed_from": ["components/pill-badge.html"],
+      "slots": ["trip-list", "trip-destination", "trip-date", "trip-status", "trip-fare"]
+    },
+    {
+      "name": "profile",
+      "path": "wireframes/layouts/profile.html",
+      "purpose": "Rider account settings. Form-and-list layout, no map.",
+      "when_to_use": ["account screen", "settings", "profile", "sign out"],
+      "composed_from": ["components/buttons.html"],
+      "slots": ["name", "phone", "settings-list", "sign-out"]
+    }
+  ],
+  "sections": [
+    {
+      "name": "map-header",
+      "path": "wireframes/sections/map-header.html",
+      "purpose": "Full-bleed map area behind the bottom sheet. Exactly one driver pin — never a cluster.",
+      "used_by": ["home-map", "ride-confirm", "active-trip"]
+    },
+    {
+      "name": "bottom-sheet",
+      "path": "wireframes/sections/bottom-sheet.html",
+      "purpose": "Rounded-top scrollable content surface under the map. Primary content container for ride-flow screens.",
+      "used_by": ["home-map", "ride-confirm", "active-trip"]
+    },
+    {
+      "name": "fare-breakdown",
+      "path": "wireframes/sections/fare-breakdown.html",
+      "purpose": "Itemized fare list. Flat/tiered pricing only — never a surge or dynamic-pricing line.",
+      "used_by": ["ride-confirm", "fare-summary"]
+    }
+  ],
+  "components": [
+    {
+      "name": "buttons",
+      "path": "wireframes/components/buttons.html",
+      "purpose": "Primary (royal), secondary (outline), and destructive (red) button variants.",
+      "note": "Destructive variant is reserved for cancel/sign-out/no-show actions only, never a default CTA."
+    },
+    {
+      "name": "card",
+      "path": "wireframes/components/card.html",
+      "purpose": "Generic rounded content card — base for receipts, saved places, info panels."
+    },
+    {
+      "name": "pill-badge",
+      "path": "wireframes/components/pill-badge.html",
+      "purpose": "Short status labels. Variants: success (green), neutral (gray), danger (red)."
+    },
+    {
+      "name": "bottom-nav",
+      "path": "wireframes/components/bottom-nav.html",
+      "purpose": "Persistent 3-item bottom nav (Ride / Activity / Account). Fixed at the app-shell level, not per-page. Do not add a 4th item without a product decision — this app intentionally has a minimal nav."
+    },
+    {
+      "name": "driver-card",
+      "path": "wireframes/components/driver-card.html",
+      "purpose": "Represents the single assigned driver. Never render this as a list — BLAQ has one driver, one car, one fare at a time."
+    },
+    {
+      "name": "rating-stars",
+      "path": "wireframes/components/rating-stars.html",
+      "purpose": "5-star rider-to-driver rating input, filled state uses royal blue."
+    }
+  ]
+}

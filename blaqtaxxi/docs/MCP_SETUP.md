@@ -17,18 +17,25 @@
 ## Setup
 
 ```bash
-# 1. Export secrets in the shell you launch Claude Code from
+# 1. Export secrets in the terminal you launch Claude Code from
 export GITHUB_PAT=...
 export STRIPE_TEST_RESTRICTED_KEY=...
 export N8N_API_URL=https://iautomateshit.app.n8n.cloud
 export N8N_API_KEY=...
 
-# 2. Launch from the repo root and check connections
-claude
+# 2. Launch from the repo root (plan mode for Episode 0)
+claude --permission-mode plan
+
+# 3. Check the servers. Type this INSIDE the Claude Code session, at its prompt box:
 /mcp
+
+# (Or, from a normal terminal, outside a session:)
+claude mcp list
 ```
 
-Approve project-scoped servers when Claude Code asks. If one won't connect, delete it from `.mcp.json` rather than fighting it on camera (or keep the failure as episode content).
+`/mcp` is a Claude Code slash command. It lists each server in `.mcp.json`, shows connected / failed, and lets you authenticate the OAuth ones (Neon, Vercel) in your browser.
+
+The first time, Claude Code asks you to approve the project-scoped servers in `.mcp.json`; approve the ones you want. If one won't connect, delete it from `.mcp.json` rather than fighting it on camera (or keep the failure as episode content).
 
 ## Rules
 

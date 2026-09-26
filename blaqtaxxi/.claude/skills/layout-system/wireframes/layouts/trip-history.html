@@ -1,0 +1,35 @@
+<!-- Brand Standard Layout: Trip History — .claude/skills/layout-system/wireframes/layouts/trip-history.html
+     Purpose: rider's past trips list, most recent first. No map on this screen.
+     Nearest-layout match for: "past rides", "trip history", "activity tab". -->
+
+<main data-layout="trip-history" class="px-5 pt-6 pb-24">
+
+  <h1 class="text-blaq-navy font-bold text-lg mb-4" data-slot="heading">[Your trips]</h1>
+
+  <div class="space-y-3" data-slot="trip-list">
+
+    <!-- repeat this block per trip, most recent first -->
+    <div class="bg-blaq-white rounded-2xl p-4 border border-blaq-gray/15 flex items-center justify-between" data-slot="trip-item">
+      <div>
+        <p class="text-blaq-black text-sm font-medium" data-slot="trip-destination">[Destination address]</p>
+        <p class="text-blaq-gray text-xs" data-slot="trip-date">[Date · time]</p>
+        <span data-component="pill-badge" data-variant="success" class="inline-flex items-center gap-1 rounded-full bg-blaq-green/10 text-blaq-green text-xs font-semibold px-2.5 py-0.5 mt-1">
+          <span data-slot="trip-status">[Completed]</span>
+        </span>
+      </div>
+      <span class="text-blaq-navy font-bold text-sm" data-slot="trip-fare">[$0.00]</span>
+    </div>
+
+    <div class="bg-blaq-white rounded-2xl p-4 border border-blaq-gray/15 flex items-center justify-between" data-slot="trip-item">
+      <div>
+        <p class="text-blaq-black text-sm font-medium" data-slot="trip-destination">[Destination address]</p>
+        <p class="text-blaq-gray text-xs" data-slot="trip-date">[Date · time]</p>
+        <span data-component="pill-badge" data-variant="danger" class="inline-flex items-center gap-1 rounded-full bg-blaq-red/10 text-blaq-red text-xs font-semibold px-2.5 py-0.5 mt-1">
+          <span data-slot="trip-status">[Cancelled]</span>
+        </span>
+      </div>
+      <span class="text-blaq-gray font-bold text-sm" data-slot="trip-fare">&mdash;</span>
+    </div>
+
+  </div>
+</main>

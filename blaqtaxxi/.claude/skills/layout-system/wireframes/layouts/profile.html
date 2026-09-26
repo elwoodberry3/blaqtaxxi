@@ -1,0 +1,34 @@
+<!-- Brand Standard Layout: Profile / Account — .claude/skills/layout-system/wireframes/layouts/profile.html
+     Purpose: rider account settings. Non-map, form-and-list layout.
+     Nearest-layout match for: "account screen", "settings", "profile". -->
+
+<main data-layout="profile" class="px-5 pt-8 pb-24">
+
+  <div class="flex items-center gap-4 mb-6" data-slot="identity">
+    <div class="w-16 h-16 rounded-full bg-blaq-navy/10" data-slot="avatar"></div>
+    <div>
+      <p class="text-blaq-navy font-bold text-base" data-slot="name">[Rider Name]</p>
+      <p class="text-blaq-gray text-xs" data-slot="phone">[Phone on file]</p>
+    </div>
+  </div>
+
+  <div class="space-y-1" data-slot="settings-list">
+    <!-- repeat per settings row -->
+    <button type="button" class="w-full flex items-center justify-between py-3 border-b border-blaq-gray/15" data-slot="settings-row">
+      <span class="text-blaq-black text-sm" data-slot="row-label">[Payment method]</span>
+      <span class="text-blaq-gray text-sm" data-slot="row-value">&rsaquo;</span>
+    </button>
+    <button type="button" class="w-full flex items-center justify-between py-3 border-b border-blaq-gray/15" data-slot="settings-row">
+      <span class="text-blaq-black text-sm" data-slot="row-label">[Saved places]</span>
+      <span class="text-blaq-gray text-sm" data-slot="row-value">&rsaquo;</span>
+    </button>
+    <button type="button" class="w-full flex items-center justify-between py-3 border-b border-blaq-gray/15" data-slot="settings-row">
+      <span class="text-blaq-black text-sm" data-slot="row-label">[Notifications]</span>
+      <span class="text-blaq-gray text-sm" data-slot="row-value">&rsaquo;</span>
+    </button>
+  </div>
+
+  <button type="button" class="w-full rounded-full bg-blaq-red text-blaq-white font-semibold text-base py-4 mt-8" data-slot="sign-out">
+    [Sign out]
+  </button>
+</main>

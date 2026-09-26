@@ -1,0 +1,53 @@
+/*
+  BLAQ (Blaqtaxxi) layout-system tokens.
+  Preview-only utility classes — mirror these names 1:1 in tailwind.config
+  (theme.extend.colors) when wiring this into the real Next.js project.
+  Do not add colors here that aren't in the brand guide; flag assumptions
+  in CLAUDE.layout.md instead.
+*/
+
+:root {
+  --blaq-navy: #002244;   /* Cowboys Blue / Navy — primary */
+  --blaq-royal: #0072CE;  /* Royal Blue — brand accent / primary CTA */
+  --blaq-green: #008752;  /* Victory Green — success / confirm */
+  --blaq-red: #862633;    /* Republic Red — danger / destructive only */
+  --blaq-gray: #8A9197;   /* Silver / Gridiron Gray — muted, dividers */
+  --blaq-black: #000000;  /* Stealth Black — body text, icons */
+  --blaq-canvas: #F5F6F7; /* assumed — page background, not in source palette */
+  --blaq-white: #FFFFFF;  /* assumed — card surfaces */
+}
+
+body { background: var(--blaq-canvas); color: var(--blaq-black); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+.bg-blaq-navy   { background-color: var(--blaq-navy); }
+.bg-blaq-royal  { background-color: var(--blaq-royal); }
+.bg-blaq-green  { background-color: var(--blaq-green); }
+.bg-blaq-red    { background-color: var(--blaq-red); }
+.bg-blaq-gray   { background-color: var(--blaq-gray); }
+.bg-blaq-canvas { background-color: var(--blaq-canvas); }
+.bg-blaq-white  { background-color: var(--blaq-white); }
+
+.text-blaq-navy   { color: var(--blaq-navy); }
+.text-blaq-royal  { color: var(--blaq-royal); }
+.text-blaq-green  { color: var(--blaq-green); }
+.text-blaq-red    { color: var(--blaq-red); }
+.text-blaq-gray   { color: var(--blaq-gray); }
+.text-blaq-black  { color: var(--blaq-black); }
+.text-blaq-white  { color: var(--blaq-white); }
+
+.border-blaq-navy  { border-color: var(--blaq-navy); }
+.border-blaq-royal { border-color: var(--blaq-royal); }
+.border-blaq-gray  { border-color: var(--blaq-gray); }
+
+/* Mobile device frame used only by preview.html — not part of the wireframes themselves */
+.blaq-frame {
+  width: 390px;
+  min-height: 780px;
+  margin: 0 auto;
+  background: var(--blaq-canvas);
+  border-radius: 36px;
+  border: 10px solid var(--blaq-black);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+}

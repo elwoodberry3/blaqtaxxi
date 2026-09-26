@@ -18,6 +18,7 @@ This is what makes it testable, explainable on camera, and reusable for any solo
 | Term | Meaning |
 |---|---|
 | **Item** | Something on the driver's day: a `ride` or a `block` (lunch, car wash) |
+| **Car** | A vehicle with its own price configuration. Chosen by admin assignment, not by feasibility (D-83) |
 | **Start place / end place** | Where the driver must be when the item starts / where he is when it ends. Ride: pickup → dropoff. Block: same place both |
 | **Dwell** | Load time at pickup (3 min) and unload time at drop-off (2 min) |
 | **Deadhead** | Driving with no rider: from previous item's end place to this item's start place |
@@ -31,9 +32,9 @@ This is what makes it testable, explainable on camera, and reusable for any solo
 ```ts
 export interface SchedulerConfig {
   tz: 'America/Chicago';
-  availabilityStartMin: 300;     // 05:00
-  availabilityEndMin: 1440;      // 24:00
-  mustFinishByEnd: true;         // D-09
+  defaultDayStartMin: 300;       // 05:00 (per-date overrides beat this, D-44)
+  defaultDayEndMin: 1440;        // 24:00 = last time a ride may be BOOKED TO START (D-09)
+  // Cutoff rule: pickupAt <= day end (inclusive). A ride may finish after the cutoff.
   bufferMin: 5;                  // D-21
   loadDwellMin: 3;
   unloadDwellMin: 2;
@@ -87,7 +88,7 @@ export type InsertResult =
 
 The candidate is `{ pickup, dropoff, pickupAt, rideNow? }`. The existing `schedule` is assumed **already valid** and sorted by start time.
 
-1. **Availability.** `pickupAt >= window.start`. Compute `rideMinutes = provider.minutes(pickup, dropoff, pickupAt + loadDwell)`. `plannedEndAt = pickupAt + loadDwell + rideMinutes + unloadDwell`. If `mustFinishByEnd` then `plannedEndAt <= window.end`, else `pickupAt < window.end`. Fail → `OUTSIDE_AVAILABILITY`.
+1. **Availability.** The `window` is that date's effective day: the default 05:00–24:00, or the driver's override for that date (shortened, moved, or closed; D-44). Require `window.start <= pickupAt <= window.end`. **The end time is a cutoff on when a ride may *start*** (D-09); `plannedEndAt` may fall after it. Compute `rideMinutes = provider.minutes(pickup, dropoff, pickupAt + loadDwell)` and `plannedEndAt = pickupAt + loadDwell + rideMinutes + unloadDwell` (needed for steps 3 and 5). A closed day has no window: every candidate fails. Fail → `OUTSIDE_AVAILABILITY`.
 2. **Lead time.** Unless `rideNow`, `pickupAt >= now + minLeadMin`. Fail → `TOO_SOON`.
 3. **Overlap.** No existing item's `[start, end)` intersects `[pickupAt, plannedEndAt)`. Fail → `OVERLAP` (takes precedence over 4 and 5).
 4. **Reach the pickup (predecessor).** `prev` = the item with the latest `end <= pickupAt`.
@@ -138,37 +139,52 @@ Fixture places and times: `docs/fixtures/travel-matrix.json`. **Illustrative num
 | **S3** | After S1's ride ends at `DAL_A` 09:08, new ride picking up at `DAL_B` (Deep Ellum, 7 min base) | Deadhead departs 09:08 (peak): 7 × 1.4 → **10 min**, arrive 09:18, +5 = 09:23, snap → **09:25**. Earliest slot is **17 min** after the last drop-off, not an hour. `tightFit = true` |
 | **S4** | Schedule: S1 ride (08:00) and a ride at `LEW_A` 10:20. Candidate `DAL_B → PLA` at 09:30 | Prev check ok (09:08 + 10 + 5 = 09:23 ≤ 09:30). Ride departs 09:33 (off-peak): 29 min → ends **10:04** at `PLA`. Return `PLA → LEW_A` 24 min → 10:28, +5 = 10:33 > 10:20 → **`BREAKS_NEXT_PICKUP`, shortfall 13** |
 | **S5a** | Candidate pickup 04:50 | `OUTSIDE_AVAILABILITY` |
-| **S5b** | `DAL_A → LEW_A` at 23:30 (ends 00:10) | `OUTSIDE_AVAILABILITY` under `mustFinishByEnd`. At 23:15 (ends 23:55) → `ok` |
+| **S5b** | `DAL_A → LEW_A` at 23:30 (ends 00:10, after the 24:00 cutoff) | **`ok`**: the ride *starts* before the cutoff (D-09). A ride may finish after the driver's end time |
+| **S5c** | Same trip, pickup exactly at the cutoff | `ok` (equality passes). One grid step after the cutoff → `OUTSIDE_AVAILABILITY` |
 | **S6a** | `now = 10:00`, driver idle at home. Scheduled pickup at 10:30 | `TOO_SOON`. 11:00 → `ok` if feasible |
 | **S6b** | Same `now`, `earliestRideNow()` for `LEW_A` | 10:00 + 6 + 5 = 10:11 → snap → **10:15** |
 | **S7** | Empty day. `PLA → FRI` at 05:00 from home | Home → PLA 26 min from 05:00 → 05:26, +5 = 05:31 > 05:00 → `CANT_REACH_PICKUP`, shortfall 31. At **05:35** → `ok` |
 | **S8a** | Block at `DAL_A` 12:00–13:00. Candidate `LEW_A → DAL_A` at 11:30 (ends 12:10) | `OVERLAP` |
 | **S8b** | Same block. Candidate at 11:15 (ends 11:55 at `DAL_A`) | `ok`: 11:55 + 0 + 5 = 12:00 ≤ 12:00 (**equality passes**) |
 | **S9** | Two callers request the same slot concurrently | Integration test: exactly one insert succeeds; the loser re-runs feasibility and gets `OVERLAP` or `CANT_REACH_PICKUP` with fresh alternatives |
+| **S11a** | Per-date override: Thursday ends 14:00 (D-44). Candidate `LEW_A → DAL_A` pickup 14:00 (off-peak, ends 14:40) | `ok`. Pickup 14:05 → `OUTSIDE_AVAILABILITY`. The same request on a normal day is unaffected |
+| **S11b** | Override closes the whole day | Every candidate → `OUTSIDE_AVAILABILITY`; `findSlots` returns `[]` with reason `DAY_CLOSED` |
+| **S11c** | Driver shortens a day that already has a 15:00 booking (D-45) | The existing booking stays valid; `validateSchedule` reports it as `PAST_CUTOFF` (warning, not error); new candidates after the cutoff are rejected |
 | **S10** | DST days (Sun 2026-03-08 and Sun 2026-11-01) | `dayWindow` returns different UTC offsets but the same 19 h local window; no fixed `-6h` anywhere |
 | **L1** | Driver idle at `DAL_A` at 09:50, next pickup `LEW_A` 10:20 | Off-peak 35 → 10:25 > 10:20 → `AT_RISK`, **late 5 min** |
 | **L2** | L1 plus a following ride whose slack after the 10:20 ride is 3 min | Cascade: late 5 → following item late `5 - 3 = 2`; both flagged |
 | **V1** | `visibilityWindow(pickupAt, now)` | `countdown` if `now < pickupAt - 30m`; `live` inside; `done` after ride end |
 
-### Pricing (same fixture, `lib/pricing`)
+### Pricing (same fixture plus `docs/fixtures/vehicles.json`, `lib/pricing`)
 
-| ID | Trip | Expected |
+A price configuration belongs to a **car** (D-80/D-81). Tiers are evaluated on the **off-peak reference trip time**, integer cents, first tier with `upToMinutes >= minutes` wins (`null` = unbounded). Feasibility does not depend on the car (D-83); only price and display do.
+
+| ID | Trip / setup | Expected |
 |---|---|---|
-| P1 | `LEW_A → DAL_A`, off-peak reference 35 min | **$25** (matches "Lewisville → Dallas, $25", D-08) |
-| P2 | `DAL_A → DAL_B`, 7 min | **$20** |
-| P3 | `LEW_A → DAL_A` quoted at 08:00 vs 14:00 | Both **$25**. Price ignores traffic |
-| P4 | `FRI → FTW_A`, reference 52 min | **$30** |
+| P1 | `LEW_A → DAL_A`, off-peak reference 35 min, car 1 (`pc_std_v1`) | **$25** (matches "Lewisville → Dallas, $25", D-08) |
+| P2 | `DAL_A → DAL_B`, 7 min, car 1 | **$20** |
+| P3 | `LEW_A → DAL_A` quoted at 08:00 vs 14:00, car 1 | Both **$25**. Price ignores traffic |
+| P4 | `FRI → FTW_A`, reference 52 min, car 1 | **$30** |
 | P5 | Out-of-area point | No quote; `OUT_OF_AREA` |
+| P6 | Same `LEW_A → DAL_A` trip with car 2 (`pc_xl_v1`) | **$30** (car 2's 30–45 tier). Same slots offered as car 1: feasibility is car-independent |
+| P7 | Book at `pc_std_v1` v1 ($25), then the owner publishes v2 with $28 for that tier | Existing booking still **$25** (snapshot of config id + version). A new quote is **$28**. Boundary: exactly 30 min → first tier; exactly 45 → second |
 
 ### Policy (`lib/policy`)
 
 | ID | Case | Expected refund |
 |---|---|---|
-| C1 | Rider cancels at T-90 min | 100% |
-| C2 | Rider cancels at T-30 min | 50% |
-| C3 | Driver cancels at any time | 100% |
-| C4 | No-show marked ≥ 5 min after `Arrived` | 0% |
-| C5 | No-show marked at 3 min after `Arrived` | Rejected: grace not elapsed |
+Policy v1 (D-52, D-53, D-55), modeled on Uber/Lyft. Fare $20 for these rows. Amounts are config in `policy.config.ts`.
+
+| ID | Case | Rider is charged | Refund |
+|---|---|---|---|
+| C1 | Rider cancels at T-90 min | $0 | $20.00 |
+| C2 | Rider cancels at T-30 min, driver not yet en route | $5 fee | $15.00 |
+| C2b | Rider cancels after the driver tapped `Heading to pickup` | $10 fee | $10.00 |
+| C3 | Driver cancels at any time | $0 | $20.00 |
+| C4 | No-show marked ≥ 5 min after `Arrived` (rider was contacted) | $10 fee | $10.00 |
+| C5 | No-show marked 3 min after `Arrived` | Rejected: grace not elapsed | n/a |
+| C6 | Projected driver lateness ≥ 10 min, rider cancels | $0 | $20.00 |
+| C7 | Fee is capped at the fare paid (fare $8 test config, fee $10) | fare only | $0 |
 
 ## 9. Property tests (the ones that impress)
 

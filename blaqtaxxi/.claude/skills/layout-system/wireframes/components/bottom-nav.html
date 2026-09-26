@@ -1,0 +1,18 @@
+<!-- Brand Standard Component: Bottom Nav — .claude/skills/layout-system/wireframes/components/bottom-nav.html
+     Purpose: single persistent bottom nav, Lyft-like. One driver / one fare means a
+     minimal nav — no multi-service switcher. Fixed 3 items only. -->
+
+<nav data-component="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-blaq-white border-t border-blaq-gray/20 flex justify-around items-center py-3">
+  <button type="button" data-slot="nav-item" data-active="true" class="flex flex-col items-center gap-1 text-blaq-royal text-xs font-semibold">
+    <span class="w-6 h-6 rounded-full bg-blaq-royal/15"></span>
+    <span data-slot="label">Ride</span>
+  </button>
+  <button type="button" data-slot="nav-item" class="flex flex-col items-center gap-1 text-blaq-gray text-xs font-medium">
+    <span class="w-6 h-6 rounded-full bg-blaq-gray/15"></span>
+    <span data-slot="label">Activity</span>
+  </button>
+  <button type="button" data-slot="nav-item" class="flex flex-col items-center gap-1 text-blaq-gray text-xs font-medium">
+    <span class="w-6 h-6 rounded-full bg-blaq-gray/15"></span>
+    <span data-slot="label">Account</span>
+  </button>
+</nav>

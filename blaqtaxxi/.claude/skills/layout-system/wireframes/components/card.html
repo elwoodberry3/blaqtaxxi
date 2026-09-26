@@ -1,0 +1,15 @@
+<!-- Brand Standard Component: Card — .claude/skills/layout-system/wireframes/components/card.html
+     Purpose: generic rounded content card. Base for fare summaries, saved places, receipts. -->
+
+<div data-component="card" class="bg-blaq-white rounded-2xl p-4 shadow-sm border border-blaq-gray/20">
+  <header data-slot="header" class="flex items-center justify-between mb-2">
+    <span class="text-blaq-navy font-semibold text-sm" data-slot="title">[Card Title]</span>
+    <span class="text-blaq-gray text-xs" data-slot="meta">[Meta / timestamp]</span>
+  </header>
+  <div data-slot="content" class="text-blaq-black text-sm">
+    [Card body content placeholder]
+  </div>
+  <footer data-slot="footer" class="mt-3">
+    <!-- optional: inject a button from components/buttons.html -->
+  </footer>
+</div>

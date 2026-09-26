@@ -1,0 +1,43 @@
+<!-- Brand Standard Layout: Fare Summary — .claude/skills/layout-system/wireframes/layouts/fare-summary.html
+     Purpose: end-of-trip receipt + rating. No dynamic-pricing / surge language.
+     Nearest-layout match for: "trip complete", "receipt", "rate your driver". -->
+
+<main data-layout="fare-summary" class="px-5 pt-8 pb-24">
+
+  <div class="text-center mb-6" data-slot="confirmation">
+    <span class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blaq-green/10 text-blaq-green text-2xl mb-3">&#10003;</span>
+    <h1 class="text-blaq-navy font-bold text-lg" data-slot="heading">[Trip complete]</h1>
+  </div>
+
+  <div class="bg-blaq-canvas rounded-2xl p-4 mb-6" data-slot="fare-card">
+    <div data-section="fare-breakdown" class="divide-y divide-blaq-gray/15">
+      <div class="flex justify-between py-2 text-sm">
+        <span class="text-blaq-black" data-slot="line-label">[Base fare]</span>
+        <span class="text-blaq-black font-medium" data-slot="line-value">[$0.00]</span>
+      </div>
+      <div class="flex justify-between py-2 text-sm">
+        <span class="text-blaq-black" data-slot="line-label">[Distance / time tier]</span>
+        <span class="text-blaq-black font-medium" data-slot="line-value">[$0.00]</span>
+      </div>
+      <div class="flex justify-between pt-3 text-base">
+        <span class="text-blaq-navy font-bold" data-slot="total-label">Total charged</span>
+        <span class="text-blaq-navy font-bold" data-slot="total-value">[$0.00]</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mb-6" data-slot="rating-block">
+    <p class="text-blaq-black text-sm font-medium mb-2" data-slot="rating-prompt">[Rate your driver]</p>
+    <div data-component="rating-stars" class="flex gap-1 justify-center" data-value="0">
+      <span data-slot="star" class="w-8 h-8 text-blaq-gray">&#9733;</span>
+      <span data-slot="star" class="w-8 h-8 text-blaq-gray">&#9733;</span>
+      <span data-slot="star" class="w-8 h-8 text-blaq-gray">&#9733;</span>
+      <span data-slot="star" class="w-8 h-8 text-blaq-gray">&#9733;</span>
+      <span data-slot="star" class="w-8 h-8 text-blaq-gray">&#9733;</span>
+    </div>
+  </div>
+
+  <button type="button" class="w-full rounded-full bg-blaq-royal text-blaq-white font-semibold text-base py-4" data-slot="cta">
+    [Done]
+  </button>
+</main>

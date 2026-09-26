@@ -1,0 +1,14 @@
+<!-- Brand Standard Component: Driver Card — .claude/skills/layout-system/wireframes/components/driver-card.html
+     Purpose: shows the single assigned driver. This is a ONE-driver app — no list of
+     nearby drivers to choose from. This card always represents exactly one person. -->
+
+<div data-component="driver-card" class="bg-blaq-navy rounded-2xl p-4 flex items-center gap-3">
+  <div class="w-12 h-12 rounded-full bg-blaq-white/20" data-slot="driver-photo"></div>
+  <div class="flex-1">
+    <p class="text-blaq-white font-semibold text-sm" data-slot="driver-name">[Driver Name]</p>
+    <p class="text-blaq-white/70 text-xs" data-slot="vehicle">[Vehicle — e.g. Silver Toyota Camry · BLQ 4471]</p>
+  </div>
+  <div class="text-right">
+    <p class="text-blaq-white text-xs" data-slot="eta">[ETA — e.g. 4 min]</p>
+  </div>
+</div>

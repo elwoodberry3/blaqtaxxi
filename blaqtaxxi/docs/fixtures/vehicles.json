@@ -1,0 +1,61 @@
+{
+  "_note": "FAKE demo data for tests and the demo environment. Not the client's real vehicle details. Plate values are placeholders. nissan-sentra.jpg was referenced by the client brief but has not been delivered; photo fields are empty until it is.",
+  "vehicles": [
+    {
+      "id": "veh_demo_1",
+      "label": "Black Nissan Sentra",
+      "color": "Black",
+      "make": "Nissan",
+      "model": "Sentra",
+      "year": null,
+      "plate": "DEMO-000",
+      "seats": 4,
+      "photoUrl": null,
+      "active": true,
+      "priceConfigId": "pc_std_v1"
+    },
+    {
+      "id": "veh_demo_2",
+      "label": "Demo second car (fictional, for multi-car tests only)",
+      "color": "Gray",
+      "make": "Demo",
+      "model": "Sedan XL",
+      "year": null,
+      "plate": "DEMO-001",
+      "seats": 6,
+      "photoUrl": null,
+      "active": false,
+      "priceConfigId": "pc_xl_v1"
+    }
+  ],
+  "priceConfigs": [
+    {
+      "id": "pc_std_v1",
+      "version": 1,
+      "currency": "USD",
+      "effectiveFrom": "2026-01-01",
+      "referenceBasis": "off-peak trip minutes",
+      "tiers": [
+        { "upToMinutes": 30,   "cents": 2000, "label": "Flat rate, up to 30 min" },
+        { "upToMinutes": 45,   "cents": 2500, "label": "Flat rate, 30-45 min" },
+        { "upToMinutes": null, "cents": 3000, "label": "Flat rate, over 45 min" }
+      ]
+    },
+    {
+      "id": "pc_xl_v1",
+      "version": 1,
+      "currency": "USD",
+      "effectiveFrom": "2026-01-01",
+      "referenceBasis": "off-peak trip minutes",
+      "tiers": [
+        { "upToMinutes": 30,   "cents": 2500, "label": "Flat rate, up to 30 min" },
+        { "upToMinutes": 45,   "cents": 3000, "label": "Flat rate, 30-45 min" },
+        { "upToMinutes": null, "cents": 3500, "label": "Flat rate, over 45 min" }
+      ]
+    }
+  ],
+  "assignments": [
+    { "vehicleId": "veh_demo_1", "from": "2026-01-01T00:00:00-06:00", "to": null }
+  ],
+  "_tierRule": "upToMinutes is inclusive. The first tier whose upToMinutes >= reference minutes wins; null means no upper bound."
+}
