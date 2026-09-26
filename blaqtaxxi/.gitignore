@@ -307,3 +307,10 @@ Desktop.ini
 # END — IAS Universal .gitignore
 # Last updated: 2026-06 · v1.0
 # =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# Client images (D-125): never committed. Originals stay local; upload via admin.
+# -----------------------------------------------------------------------------
+client-assets/*
+!client-assets/README.md
