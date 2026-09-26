@@ -13,4 +13,5 @@ Audit `app/`, `components/`, and any CSS for brand and accessibility violations.
 5. **Approved pairs and contrast.** Check foreground/background combinations against the table in `docs/BRAND.md`; flag any pair under 4.5:1 (text) or 3:1 (UI graphics), including tinted-pill text.
 6. **Accessibility basics.** Icon-only buttons need `aria-label`; ratings are a radio group; ETA/status regions use `aria-live="polite"`; map has a text alternative; touch targets on `/drive` and `/admin` are at least 44 px.
 7. **Chips.** `TodoChip`/`StatusChip` must be gated by `NEXT_PUBLIC_SHOW_TODO_CHIPS`; a production build must render none. Run `NEXT_PUBLIC_SHOW_TODO_CHIPS=false npm run build` and grep the output for chip markers.
-8. **Product guardrails.** No driver list, no ride-tier selector (unless the U-V2 flag is on), no surge or dynamic-pricing wording, no customer account/profile screens.
+8. **Product guardrails.** No driver list, no surge or dynamic-pricing wording, no "tier" wording, no customer account/profile screens. The car choice step is allowed (D-82) and must show each car's own price for the trip.
+9. **Warning color.** `blaq-amber` is used for warnings/late-risk only, always with an icon and a label; red is never used for lateness.

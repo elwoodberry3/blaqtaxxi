@@ -15,7 +15,7 @@ You are an independent auditor with no stake in the code. Read the repo as it ac
 ### Known killers (from prior builds)
 - [ ] `next.config.*` contains no `output: 'export'`.
 - [ ] No module-level `const` chain reading `process.env.NEXT_PUBLIC_*`; reads occur inside function/component bodies.
-- [ ] No `next/font/google`; fonts via runtime `<link>`.
+- [ ] No `next/font/google`; the brand font is self-hosted with `next/font/local`.
 - [ ] n8n calls use header key exactly `Authorization` with value `Bearer <secret>`; `/api/n8n/*` returns 401 on missing/wrong secret.
 - [ ] No mixed-version drift (e.g., duplicate/conflicting type definitions, stale copies of the same module).
 
@@ -35,13 +35,13 @@ You are an independent auditor with no stake in the code. Read the repo as it ac
 - [ ] Rate limiting on public routes.
 
 ### Payments and secrets
-- [ ] Stripe test mode everywhere except production after sign-off; no live key loadable in preview/staging.
+- [ ] Stripe test mode in `demo` and `pilot`; a live key exists only in the client's own production deployment after sign-off; IAS's Stripe is always test mode.
 - [ ] Webhook signature verified; handler idempotent on event id.
 - [ ] `.env*` ignored (except `.env.example`); grep the tree and `git log -p` for secrets (`sk_live`, `sk_test`, `whsec_`, `Bearer ` followed by a literal token, API key shapes).
 - [ ] Money is integer cents; price is independent of hour.
 
 ### Demo mode and honesty
-- [ ] Fresh clone + `npm install` + `npm run dev` works with **no** env vars (`demo`); chips shown for every demo subsystem on `demo`/`staging` only.
+- [ ] Fresh clone + `npm install` + `npm run dev` works with **no** env vars (`demo`); chips shown for every demo subsystem in `demo` only.
 - [ ] Grep for `TODO`/`FIXME` and confirm each is either tracked in `UNKNOWNS.md` or resolved.
 - [ ] No fabricated metrics, ratings, testimonials, ride counts, or "licensed/insured/verified" claims in UI or docs.
 - [ ] Demo travel times labeled illustrative.
@@ -51,9 +51,13 @@ You are an independent auditor with no stake in the code. Read the repo as it ac
 - [ ] No `text-blaq-gray` on text (use `blaq-gray-text`); red only on destructive/negative actions; no invented warning color (D-73).
 - [ ] Contrast passes for every pair used (BRAND.md table); tinted pills checked.
 - [ ] Icon-only buttons have `aria-label`; rating is a radio group; ETA/status use `aria-live="polite"`; the map has a text alternative; 44 px targets on `/drive` and `/admin`.
-- [ ] No driver list, no ride-tier selector (unless the U-V2 flag is on), no surge wording, no customer account/profile screens.
+- [ ] No driver list, no surge or dynamic-pricing wording, no "tier" wording, no customer account/profile screens. The car choice step (D-82) is allowed and must show each car's own price for the trip.
 
-### Production and client
+### Pilot, production, and client
+- [ ] `APP_ENV=pilot`: `PilotBanner` and feedback control render; no chips; Stripe test keys only; only allow-listed testers can complete a test payment; a non-allow-listed visitor stops at the payment notice; unpaid-hold contact data is purged within 24 h; no SMS to non-allow-listed recipients.
+- [ ] Client images are not in git (`client-assets/` ignored); uploaded through the admin.
+- [ ] Driver device handling: pings from a revoked `device_id` are rejected.
+- [ ] The car list only offers cars assigned at that time with enough seats (S12a, S12d).
 - [ ] `APP_ENV=production` build renders **zero** TodoChip/StatusChip (grep the built output); `/dev/*` and dev sign-in are unreachable.
 - [ ] Production boot check fails when any required integration is missing.
 - [ ] Customer link: last name + last 4 alone never authorizes; random suffix, hashed at rest, rate-limited, expiring; `/pickup/*` scrubbed from logs/analytics; `Referrer-Policy: no-referrer`, `noindex`.

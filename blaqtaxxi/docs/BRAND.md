@@ -14,15 +14,16 @@ Contrast ratios below were **computed** (WCAG 2.x relative luminance), not estim
 | `blaq-red` | `#862633` | Danger: cancel, no-show, sign out, cancelled. **Destructive/negative only** |
 | `blaq-gray` | `#8A9197` | Dividers, disabled, borders, decorative. **Not for text (see below)** |
 | `blaq-black` | `#000000` | Body text, icons |
-| `blaq-canvas` | `#F5F6F7` | Page background. *Assumed by the layout system, not confirmed (U-B1)* |
+| `blaq-canvas` | `#F5F6F7` | Page background. **Confirmed by the client** |
 | `blaq-white` | `#FFFFFF` | Cards, sheets, reversed text |
-| `blaq-gray-text` | `#686D71` | **Proposed** text gray: a darker shade of `blaq-gray`. Needs client approval (U-B1) |
+| `blaq-gray-text` | `#686D71` | Text gray, a darker shade of `blaq-gray`. **Approved by the client** |
+| `blaq-amber` | `#A15C00` | **Warning / late-risk.** Approved in principle by the client; this hex is my proposal (5.19:1 on white, 4.80:1 on canvas, 4.55:1 on its 10% tint). Always paired with an icon and a label |
 
 ```ts
 // tailwind.config.ts (extend)
 colors: {
   'blaq-navy': '#002244', 'blaq-royal': '#0072CE', 'blaq-green': '#008752',
-  'blaq-red': '#862633', 'blaq-gray': '#8A9197', 'blaq-gray-text': '#686D71',
+  'blaq-red': '#862633', 'blaq-amber': '#A15C00', 'blaq-gray': '#8A9197', 'blaq-gray-text': '#686D71',
   'blaq-black': '#000000', 'blaq-canvas': '#F5F6F7', 'blaq-white': '#FFFFFF',
 }
 ```
@@ -67,14 +68,28 @@ Use `100dvh`/`dvh` units rather than `vh` for map-plus-sheet layouts so mobile b
 | During trip | Route line and car marker in royal; ETA in navy |
 | Complete | Green check, receipt |
 | Cancelled / no-show | Danger pill (red) |
-| **Running late / warning** | **No token exists.** Red is reserved for destructive actions, so do not use it for lateness. Until the client approves a warning color (U-B1): navy text + warning icon + explicit label ("Running about 5 min late"). Color is never the only carrier of meaning |
-| Demo/staging chips | Neutral gray pill. **Never rendered in production** |
+| **Running late / warning** | `blaq-amber` text/icon on white or a 10% amber tint, with a warning icon and an explicit label ("Running about 5 min late"). Amber and red are close in lightness, so never rely on hue alone. Red stays destructive-only |
+| Demo chips | Neutral gray pill, **`demo` only** (never in `pilot` or `production`) |
+| Pilot banner | Navy bar, white text (pilot only) |
 
 Color ratio: `blaq-navy` and `blaq-royal` together stay under about 30% of any screen; canvas and white are the majority surface.
 
 ## Typography
 
-System font stack from the layout system unless the client supplies a brand font (U-B3). Times, ETAs, and prices use tabular figures so digits do not jump as the countdown ticks. Minimum 16 px body on the customer and driver surfaces; the wireframes' `text-xs` (12 px) is for metadata only, at `blaq-gray-text` or darker.
+- **Momo Trust Display** (client-specified, on Google Fonts) for the wordmark and headings. Weights and license are **not verified** (the family page loaded but its details, and GitHub, did not). Confirm both when downloading. Display faces are less legible small: use it at 20 px and up, and keep body text in the system stack unless the client supplies a text face (U-B9).
+- **Self-host** with `next/font/local` from files committed to the repo. This avoids the build-time Google fetch failure (gotcha 3) and third-party font requests.
+- Times, ETAs, and prices use tabular figures so digits do not jump as the countdown ticks. Minimum 16 px body on the customer and driver surfaces; `text-xs` is for metadata only, at `blaq-gray-text` or darker.
+
+## Logo, wordmark, favicon
+
+| Asset | As supplied | Rule until replaced |
+|---|---|---|
+| Wordmark `wordmark__blaq.png` | 195×75 PNG, **opaque** (white background baked in), black | Use only on white or canvas surfaces. **Not on navy** (black on navy is 1.31:1) and not inverted by CSS (the white box would invert too). Request SVG/transparent plus a reversed white version (U-B4) |
+| Favicon `favicon.jpg` | 512×512 JPEG, black "B", soft, no transparency | Generate 16/32/180/192/512 for the pilot; request a master (U-B8) |
+| Driver headshot | Tilted, fisheye-distorted selfie | Crop to the face for the driver card; request a straight-on headshot (U-B7) |
+| Car photos | Sentra and Suburban on white, look like stock images (unverified) | Uploaded via admin; replace with the driver's real cars for a real launch (U-B5) |
+
+Keep clear space around the wordmark of at least the height of the "B". Do not recolor or stretch it.
 
 ## Maps
 

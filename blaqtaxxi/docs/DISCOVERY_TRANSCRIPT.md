@@ -99,3 +99,38 @@ Earlier answers (same day): Lewisville, TX; Build 32; cancellation/no-show shoul
 | A13 | "Nissan Sentra" (from the photo filename) confirms A2: the vehicle is a Sentra, and the transcript's "Central" was a transcription error | High |
 | A14 | "Many cars, each with a price configuration": read as one driver, several cars (U-V1); price is per car | Medium |
 | A15 | The link format is stated; a random suffix is proposed for security (U-L1) | High that it is guessable |
+
+
+---
+
+## Steve's answers, 2026-09-25 (evening; condensed from his message)
+
+- **Driver's phone:** either; Android today, an iPhone soon. A thin native app shell is acceptable. "In older versions of Uber they would give you the option to open the route in Google Maps which would open the Google Maps app. The driver then uses this. The app from the drivers POV doesn't 'own' the map."
+- **Many cars:** one driver who switches cars (sedan/SUV/black car) on different days or shifts.
+- **Customer chooses the car:** yes, at booking, for "a more luxury ride that the single driver owns (nissan-sentra.jpg and the example SUV, chevrolet-suburban-3500hdheavy-duty.jpg)".
+- **Customer link:** approved with the random suffix; **per trip**.
+- **Delivery:** the MVP demo is deployed "on our side" (e.g. `blaqtaxxi.iasbootcamp.com`). The client is the driver and his clients are the passengers. IAS provides instructions on how to use it and how to "kick the tires" for a **1–2 round feedback loop**. He can use it, and give it to the public, "up until money is paid". IAS owns the domain/DNS, Vercel and Google Cloud projects, and the demo/live Stripe account. Once the client approves the final, IAS gives instructions to deploy on his own domain, Vercel, etc.
+- **Brand assets supplied:** `wordmark__blaq.png`; wordmark typeface Momo Trust Display (Google Fonts); `favicon.jpg`; `nissan-sentra.jpg`; `profile.jpg` (driver photo); `chevrolet-suburban-3500hdheavy-duty.jpg`. **Confirmed** canvas `#F5F6F7`/`#FFFFFF`. **Approved** the darker text gray `#686D71`. **Approved** a warning/late-risk color.
+
+| # | Interpretation | Confidence |
+|---|---|---|
+| A16 | "Demo/live Stripe account owned by IAS" is read as test mode in the pilot; whether IAS's live account ever takes the client's real fares is left open and defaulted to no (U-P2) | Medium |
+| A17 | "They can use it up until money is paid" is read as: the public can go through the payment step's entry but no payment is taken and no ride is booked | Medium |
+| A18 | The Suburban is "the example SUV" and is treated as an example car until confirmed (U-V5) | Medium |
+
+
+---
+
+## Steve's answers, 2026-09-25 (late evening)
+
+- **IAS's live Stripe account:** "No, IAS is always in Test mode. The objective is to show the client 'it works'."
+- **The Suburban:** "not real. It is an example." It is "a placeholder to show the client they can manage their 'fleet' in the admin area. They can set prices for each vehicle." For its placeholder prices, "use a standard flat rate for riding 'Black' in apps like Uber or Lyft."
+- **Switching cars mid-day:** "No. Cars are assigned by day or shift, and a change creates the swap block."
+- **Store accounts:** "IAS owns the Apple and Google developer account in a test flight state. IAS never publishes the app."
+- **iPhone:** "The iPhone is not real. We are planning ahead as if it is." "iPhone is the default though TestFlight internal testing."
+
+| # | Interpretation | Confidence |
+|---|---|---|
+| A19 | Uber and Lyft do not publish a flat Black rate, so "standard flat rate for Black" is read as a clearly-labeled placeholder ladder, anchored to third-party Dallas estimates ($65 / $85 / $110) | Medium |
+| A20 | "Google developer account in a test flight state" is read as the Play internal testing track (unverified) | Medium |
+| A21 | "Planning as if it is real" means iOS is designed, built, and documented as the default now, even though no physical iPhone is yet involved. Whether a physical iPhone exists for the drive test is still open (U-D7) | Medium |

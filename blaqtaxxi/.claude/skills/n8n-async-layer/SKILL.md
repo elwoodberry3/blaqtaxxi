@@ -42,6 +42,10 @@ Inbound (n8n → app):
 - Keep message copy in one Set node so it's easy to review. Plain, short, direct: "Driver is 12 min away."
 - Strip secrets from exported JSON before committing.
 
+## Pilot rule
+
+In `pilot`, **no SMS goes to the public** and email goes only to allow-listed testers (U-N1). Route every outbound message through a recipient allow-list check before sending. The pilot feedback workflow takes `POST /api/feedback` payloads (screen, role, environment, note) to a shared sheet or Slack; never include customer contact details or link secrets.
+
 ## Demo mode
 
 If `N8N_WEBHOOK_BASE` is unset, `dispatch` writes to an in-memory outbox and `/dev/outbox` renders it. The whole flow must be demoable without n8n.

@@ -21,9 +21,15 @@ The owner-driver logs into a secure backend that configures **what customers see
 ## Cars and price configs
 
 - A car has: label, year/make/model/color, plate, seats, photo, active flag, `priceConfigId`. No plate or photo in the repo; they live in the database.
-- The **scheduling resource is the driver**, not the car (D-83). Assigning a car to a time window sets which price config applies and what the customer sees; it does not change feasibility.
+- The **scheduling resource is the driver**, not the car (D-83). `vehicle_assignments` windows say **when each car is offered** (the scheduler returns `CAR_NOT_ASSIGNED` outside them). **Reject overlapping windows.** "Switch car" mid-day creates a 30-minute **swap block** at the base (D-84); never model swaps any other way.
 - Price config = ordered tiers `{upToMinutes | null, cents}` evaluated against the **off-peak reference trip time**; first tier with `upToMinutes >= minutes` wins; `null` is unbounded. Money is integer cents. Fixture: `docs/fixtures/vehicles.json`.
-- A customer-facing vehicle choice is a **default-off feature flag** (U-V2). Do not build a selector unless it is turned on.
+- The **customer chooses the car** (D-82): the booking flow offers only cars assigned at that time, with a slot, and enough seats; if only one car is offered the choice is hidden. Cars flagged `is_example` show an "example" label in the pilot admin.
+
+## Media, export/import, and the pilot
+
+- **Media:** car, driver, and logo images are uploaded through the admin to object storage (assumed Vercel Blob, D-113) and referenced by URL; validate type and size; never commit client images. Crop/resize on upload so the driver card and car cards render consistently.
+- **Config export/import (A14):** exports hours, overrides, cars, price configs, policy, templates, business profile, and media references as versioned JSON, **never bookings or customer data**; import validates the schema and shows a diff before applying and writes to the audit log. This is how the pilot's tuned config moves to the client's own deployment (D-116).
+- **Pilot feedback inbox (A15):** shows feedback submitted from any screen (role, screen, environment, note) and lets the owner mark it triaged.
 
 ## Availability
 

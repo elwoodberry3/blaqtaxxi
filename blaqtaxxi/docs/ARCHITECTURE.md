@@ -6,7 +6,7 @@
 flowchart LR
   subgraph Clients
     C[Customer web<br/>/book, /pickup/link]
-    D[Driver console<br/>/drive]
+    D[Driver app<br/>native shell + /drive]
     A[Admin backend<br/>/admin]
   end
   subgraph Vercel [Next.js 14 on Vercel]
@@ -63,9 +63,9 @@ flowchart LR
 | Surface | Routes | Auth |
 |---|---|---|
 | Customer | `/book`, `/pickup/[link]` | None. `/pickup` is authorized by the link secret (§10) |
-| Driver | `/drive` | Session, role `driver` |
+| Driver | `/drive`, loaded in the native shell (`native/driver-shell/`) | Session, role `driver`, bound to one active `device_id` |
 | Admin | `/admin/*` | Session, role `admin`, 2FA/passkey before production |
-| Dev only (`demo`/`staging`) | `/dev/sim`, `/dev/outbox`, `/spike` | Disabled in production |
+| Dev only | `/dev/sim`, `/dev/outbox` (`demo`); `/spike` (`demo`, and `pilot` until Phase 0.5 ends) | Disabled in production |
 
 ## 4. Data model (Drizzle, Neon Postgres)
 
@@ -79,9 +79,13 @@ All timestamps `timestamptz` (UTC). Money is integer cents. Config tables are **
 
 **blocks**: `id`, `driver_id`, `start_at`, `end_at`, `place jsonb`, `label`.
 
-**vehicles**: `id`, `driver_id`, `label`, `year?`, `make`, `model`, `color`, `plate`, `seats`, `photo_url?`, `active`, `price_config_id`. Photo and plate live here, never in the repo.
+**vehicles**: `id`, `driver_id`, `label`, `year?`, `make`, `model`, `color`, `plate`, `seats`, `description?`, `is_example`, `active`, `price_config_id`. Photos and plate live in the database and object storage, never in the repo.
 
-**vehicle_assignments**: `id`, `driver_id`, `vehicle_id`, `from_at`, `to_at?`. No overlapping windows per driver. Sets which car (and therefore which price config) applies; it does **not** affect feasibility (D-83).
+**media**: `id`, `owner_type` (`vehicle|driver|business`), `owner_id`, `url`, `content_type`, `bytes`, `created_by`, `created_at`. Uploaded through the admin (object storage assumed to be Vercel Blob; limits and pricing unverified, D-113).
+
+**driver_devices**: `id`, `driver_id`, `platform` (`android|ios`), `label`, `push_token?`, `last_seen_at`, `revoked_at?`. Only one non-revoked device is the active shift device; pings carry `device_id` and revoked devices are rejected (D-110).
+
+**vehicle_assignments**: `id`, `driver_id`, `vehicle_id`, `from_at`, `to_at?`. **No overlapping windows.** A car is offered only inside its windows (scheduler reason `CAR_NOT_ASSIGNED`). Switching cars mid-day inserts a 30-minute swap **block** at the base (D-84). The assignment sets price and display; travel-time feasibility stays car-independent (D-83).
 
 **price_configs**: PK (`config_id`, `version`), `effective_from`, `currency`, `tiers jsonb` (array of `upToMinutes` or null, `cents`, `label`), `created_by`, `created_at`. A vehicle's current price = the latest version with `effective_from <= now`.
 
@@ -144,6 +148,10 @@ stateDiagram-v2
 | `POST /api/pickup/recover` and `/verify` | public, strictly rate-limited | "Find my ride": last name + last 4 → one-time code |
 | `POST /api/driver/ping` | driver session | `{lat,lng,accuracy}` → Redis; triggers late-risk projection |
 | `POST /api/driver/status` | driver session | State transition + ping |
+| `POST /api/driver/device` | driver session | Register or re-authenticate a device; revokes the previous active device |
+| `POST /api/feedback` | pilot only | Feedback note with screen, role, environment → n8n |
+| `GET /api/admin/config/export`, `POST /api/admin/config/import` | admin session | Config JSON (never bookings or customers) for moving pilot config to the client's own deployment |
+| `POST /api/admin/media` | admin session | Upload car/driver/logo images to object storage |
 | `GET /api/driver/day?date=` | driver session | Timeline, gaps, projections, next pickup |
 | `/api/admin/{availability,blocks,vehicles,price-configs,policies,operations,templates,profile,bookings,audit}` | admin session | CRUD with server-side role check, optimistic concurrency, audit log. Conflicts (bookings past a new cutoff) come back as warnings, never auto-cancelled |
 | `GET /api/n8n/due`, `POST /api/n8n/ack` | `Authorization: Bearer` | Reminders and notices due now; idempotent ack |
@@ -161,9 +169,9 @@ Navigation deep links are built by `lib/navigation` from stored coordinates:
 ## 8. Tracking, navigation, and ETA (with the open risk)
 
 - **Verified:** Google's Navigation SDK is available for Android and iOS (and Flutter/React Native), **not web**, so a PWA cannot embed Google turn-by-turn. Google Maps URLs need no API key and `dir_action=navigate` starts turn-by-turn on mobile.
-- **Not verified (spike SP-1, U-D1):** when the driver taps through to the Google Maps app, our PWA goes to the background. My understanding is that browsers stop delivering location to a backgrounded web page, which would freeze the customer's live map during the drive. Two outcomes:
-  - *PWA is enough* (the test shows continuous pings): foreground `watchPosition` throttled 15–30 s plus a ping on every status tap.
-  - *PWA is not enough:* a thin native shell for `/drive` only, with a background-location plugin, still loading the Next.js driver UI and deep-linking to Google Maps. This changes distribution (app store or ad hoc install) and must be approved before it is built.
+- **Decision (approved):** the driver app is `/drive` inside a **thin native shell**, **iPhone by default** (TestFlight internal testing) and Android supported. The app does **not own the map**: it opens the Google Maps app (like older Uber versions). Because Google Maps is then in front, a web page would be backgrounded, so the shell runs a **background-location plugin** (Android foreground service; iOS background location) and posts pings to `/api/driver/ping` with its `device_id`.
+- **Not verified (spikes SP-1, SP-2, SP-4):** the chosen plugin's behavior on real phones, battery impact, OS permission prompts and notifications, TestFlight/Play/sideload distribution rules and costs, and store-review treatment of a shell that loads a hosted page. Plugin candidates are not evaluated here (see the `driver-shell` skill). Hosted-page vs bundled UI is open (U-D6).
+- **Two phones:** iPhone is the default target (the iPhone is not real yet, so we plan as if it is) and Android is supported (his phone today). **IAS never publishes the app.** Both must work; only one device is the active shift device (D-110).
 - **Customer polling:** every 60 s before T-30, every 10 s inside the window. The server checks `visibilityWindow` on every request.
 - **ETA:** approaching = `provider.minutes(lastPing, pickup, now)`; in trip = `provider.minutes(lastPing, dropoff, now)`. Cached per `(bookingId, pingAt)`. A ping older than 90 s is shown as "last seen N s ago", never as live.
 - **Route on the map:** the planned route polyline is fetched once at trip start and stored on the booking; the car marker moves along it from pings.
@@ -171,7 +179,7 @@ Navigation deep links are built by `lib/navigation` from stored coordinates:
 
 ## 9. Environments and the demo-mode matrix
 
-`APP_ENV` = `demo | staging | production`. **Demo fallbacks run only in `demo`** (and selectively in `staging`). Production checks every required integration at boot and refuses to start if one is missing.
+`APP_ENV` = `demo | pilot | production`. **Demo fallbacks run only in `demo`.** `pilot` and `production` check every required integration at boot and refuse to start if one is missing. `pilot` is IAS-hosted (Stripe test, public may use it up to payment); `production` is the client's own deployment.
 
 | Integration | Env var(s) | Missing on `demo` | Missing on `production` |
 |---|---|---|---|
@@ -184,7 +192,10 @@ Navigation deep links are built by `lib/navigation` from stored coordinates:
 | SMS | `TWILIO_*` | Log-only | May be off only if U-N1 says email-first; customers are told where the link was sent |
 | n8n | `N8N_WEBHOOK_BASE`, `N8N_BEARER` | Log-only outbox | **Fail boot** |
 | Auth | `AUTH_SECRET`, admin allow-list | Dev-only "sign in as driver/admin" | **Fail boot**; the dev sign-in must not exist in the production build |
-| Chips | `NEXT_PUBLIC_SHOW_TODO_CHIPS` | `true` | Must be unset or `false`; CI checks the built output |
+| Chips | `NEXT_PUBLIC_SHOW_TODO_CHIPS` | `true` | Must be unset or `false` in `pilot` and `production`; CI checks each built output |
+| Pilot banner and feedback | `NEXT_PUBLIC_PILOT_BANNER`, `FEEDBACK_WEBHOOK` | n/a | Present only in `pilot`; absent in `production` |
+| Pilot test payments | `PILOT_TEST_PAYMENT_ALLOWLIST` | n/a | `pilot` only: emails/identities allowed to complete a Stripe test payment |
+| Media storage | `BLOB_READ_WRITE_TOKEN` (assumed Vercel Blob) | Local files | **Fail boot** |
 
 Remember gotcha 2: read `NEXT_PUBLIC_*` inside the function body.
 
@@ -200,8 +211,8 @@ Remember gotcha 2: read `NEXT_PUBLIC_*` inside the function body.
 
 ## 11. Observability and operations
 
-Vercel Analytics, Sentry (errors, alerting to the owner), PostHog (funnel: slot viewed → held → paid → completed; no customer PII). Log every `canInsert` rejection with its `reason`. Backups: enable and **test a restore** on the production database before launch (verify the plan's retention). Budget alerts on Google Maps, Vercel, Neon, Upstash, and SMS. A runbook and handoff document are part of Phase 9.
+Vercel Analytics, Sentry (errors, alerting to the owner), PostHog (funnel: slot viewed → held → paid → completed; no customer PII). Log every `canInsert` rejection with its `reason`. Backups: enable and **test a restore** on the production database before launch (verify the plan's retention). Budget alerts on Google Maps, Vercel, Neon, Upstash, and SMS. A runbook and handoff document are part of Phase 10.
 
 ## 12. Deployment
 
-Vercel project(s) owned per U-C1. Preview per PR. `staging` for client review (Stripe test). `production` at `www.blaqtaxxi.com` after the Phase 9 gate. **Never** set `output: 'export'`.
+**Pilot:** IAS-owned Vercel and Google Cloud projects, `blaqtaxxi.iasbootcamp.com` (DNS on IAS's domain), Stripe test mode. **Production:** the client deploys the same code on his own domain and accounts using `docs/CLIENT_DEPLOY_GUIDE.md`, `scripts/doctor`, and a config import. Preview per PR. **Never** set `output: 'export'` in the Next.js app.

@@ -1,6 +1,6 @@
 ---
 description: Start a numbered build phase from docs/BUILD_PLAN.md (usage /start-phase 1)
-argument-hint: <phase number 0-8>
+argument-hint: <phase: 0, 0.5, 1-10>
 ---
 
 Start **Phase $ARGUMENTS**.

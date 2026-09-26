@@ -1,5 +1,6 @@
 {
-  "_note": "FAKE demo data for tests and the demo environment. Not the client's real vehicle details. Plate values are placeholders. nissan-sentra.jpg was referenced by the client brief but has not been delivered; photo fields are empty until it is.",
+  "_note": "Pilot/demo seed data. The Sentra is the client's real current car (model per the supplied photo filename; year and plate unknown). The Suburban is NOT a real car: it is an EXAMPLE that shows the client he can manage a fleet and set a price per vehicle (D-123). Its seats and prices are PLACEHOLDERS; the ladder is anchored to third-party Uber Black estimates for Dallas and is NOT a published Uber or Lyft rate. Plates are fake. Photos are uploaded through the admin from client-assets/, never committed.",
+  "homePlaceKey": "HOME",
   "vehicles": [
     {
       "id": "veh_demo_1",
@@ -11,21 +12,25 @@
       "plate": "DEMO-000",
       "seats": 4,
       "photoUrl": null,
+      "description": "Standard ride",
+      "isExample": false,
       "active": true,
       "priceConfigId": "pc_std_v1"
     },
     {
       "id": "veh_demo_2",
-      "label": "Demo second car (fictional, for multi-car tests only)",
-      "color": "Gray",
-      "make": "Demo",
-      "model": "Sedan XL",
+      "label": "Chevrolet Suburban (example)",
+      "color": "Black",
+      "make": "Chevrolet",
+      "model": "Suburban",
       "year": null,
       "plate": "DEMO-001",
-      "seats": 6,
+      "seats": 7,
       "photoUrl": null,
-      "active": false,
-      "priceConfigId": "pc_xl_v1"
+      "description": "Luxury SUV",
+      "isExample": true,
+      "active": true,
+      "priceConfigId": "pc_lux_v1"
     }
   ],
   "priceConfigs": [
@@ -36,26 +41,75 @@
       "effectiveFrom": "2026-01-01",
       "referenceBasis": "off-peak trip minutes",
       "tiers": [
-        { "upToMinutes": 30,   "cents": 2000, "label": "Flat rate, up to 30 min" },
-        { "upToMinutes": 45,   "cents": 2500, "label": "Flat rate, 30-45 min" },
-        { "upToMinutes": null, "cents": 3000, "label": "Flat rate, over 45 min" }
+        {
+          "upToMinutes": 30,
+          "cents": 2000,
+          "label": "Flat rate, up to 30 min"
+        },
+        {
+          "upToMinutes": 45,
+          "cents": 2500,
+          "label": "Flat rate, 30-45 min"
+        },
+        {
+          "upToMinutes": null,
+          "cents": 3000,
+          "label": "Flat rate, over 45 min"
+        }
       ]
     },
     {
-      "id": "pc_xl_v1",
+      "id": "pc_lux_v1",
       "version": 1,
       "currency": "USD",
       "effectiveFrom": "2026-01-01",
       "referenceBasis": "off-peak trip minutes",
       "tiers": [
-        { "upToMinutes": 30,   "cents": 2500, "label": "Flat rate, up to 30 min" },
-        { "upToMinutes": 45,   "cents": 3000, "label": "Flat rate, 30-45 min" },
-        { "upToMinutes": null, "cents": 3500, "label": "Flat rate, over 45 min" }
-      ]
+        {
+          "upToMinutes": 30,
+          "cents": 6500,
+          "label": "Flat rate, up to 30 min"
+        },
+        {
+          "upToMinutes": 45,
+          "cents": 8500,
+          "label": "Flat rate, 30-45 min"
+        },
+        {
+          "upToMinutes": null,
+          "cents": 11000,
+          "label": "Flat rate, over 45 min"
+        }
+      ],
+      "placeholder": true
     }
   ],
   "assignments": [
-    { "vehicleId": "veh_demo_1", "from": "2026-01-01T00:00:00-06:00", "to": null }
+    {
+      "vehicleId": "veh_demo_1",
+      "from": "2026-01-01T00:00:00-06:00",
+      "to": null
+    }
   ],
+  "_scenarioAssignments": {
+    "_note": "Used by scheduler test S12 (mid-day swap). Times are local America/Chicago on a test day.",
+    "veh_demo_1": [
+      [
+        "05:00",
+        "13:00"
+      ]
+    ],
+    "veh_demo_2": [
+      [
+        "13:30",
+        "24:00"
+      ]
+    ],
+    "swapBlock": {
+      "place": "HOME",
+      "start": "13:00",
+      "end": "13:30"
+    }
+  },
   "_tierRule": "upToMinutes is inclusive. The first tier whose upToMinutes >= reference minutes wins; null means no upper bound."
 }

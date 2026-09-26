@@ -50,10 +50,11 @@ Claude Code must not describe any item here as settled, and must not claim the p
 
 ## 8. Client, ownership, and publishing
 
-- [ ] Written agreement covering who owns the code, domain (`www.blaqtaxxi.com`), hosting, Google, and Stripe accounts after handoff (U-C1).
-- [ ] The client's consent before any episode shows his brand, pricing, transcript, or data, and before any case study is published (D-101).
-- [ ] The live Stripe account belongs to the client (D-103).
-- [ ] Support, incident contact, and maintenance responsibilities after launch (U-C3).
+- [ ] **Pilot** (IAS-owned domain, Vercel, Google Cloud, Stripe): a pilot privacy notice and "pilot, no rides are booked" terms are in place before the public uses it (U-G1, U-G2); unpaid-hold data is purged within 24 h (D-107).
+- [ ] Written agreement covering who owns the code and licence terms after handoff, and support responsibilities (U-H1).
+- [ ] The client deploys on **his own** domain, hosting, Google, and **Stripe live** accounts; IAS's Stripe is always in test mode and never processes his fares (D-103, D-119).
+- [ ] The client's consent before any episode shows his brand, pricing, photos, or transcript, and before any case study is published (D-101, U-C1).
+- [ ] Rights to the car and driver images used (the supplied car images look like manufacturer stock images; unverified, U-B5).
 
 ## 9. Claims and marketing copy
 

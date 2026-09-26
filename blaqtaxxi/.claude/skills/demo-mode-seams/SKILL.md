@@ -23,9 +23,9 @@ export function getThing(): Thing {
 
 - The app depends on the interface, never on the vendor SDK.
 - The demo implementation is deterministic and offline (fixtures, in-memory Map with TTL, console/outbox logging).
-- On `demo`/`staging` the UI shows a `StatusChip` when running on a demo implementation ("Demo travel times", "Test payment (simulated)", "SMS not connected"). Chips derive from the same env check, so they can't lie.
+- On `demo` the UI shows a `StatusChip` when running on a demo implementation ("Demo travel times", "Test payment (simulated)", "SMS not connected"). Chips derive from the same env check, so they can't lie.
 - **Chips render only when `NEXT_PUBLIC_SHOW_TODO_CHIPS=true`.** A production build renders none, and CI fails if a chip is tied to a launch blocker in `docs/UNKNOWNS.md`. Customers never see unfinished work.
-- **`APP_ENV` = `demo | staging | production`.** Demo fallbacks run only in `demo`. Production **fails loudly at boot** if any required integration is missing; the dev sign-in and `/dev/*` routes must not exist in the production build.
+- **`APP_ENV` = `demo | pilot | production`.** Demo fallbacks run only in `demo`. `pilot` (IAS-hosted, Stripe **test**, public may use it up to payment) and `production` (the client's own deployment) **fail loudly at boot** if any required integration is missing. The dev sign-in and `/dev/*` routes must not exist in either. `pilot` adds a `PilotBanner`, a "Send feedback" control, and the payment-step notice, and never shows unfinished-work chips to the public.
 
 ## Matrix
 
@@ -33,14 +33,14 @@ See `docs/ARCHITECTURE.md` §9 for the full env → fallback table. Keep it curr
 
 ## Chips
 
-- `TodoChip`: something planned but not built (e.g., "Cash App/Zelle", "Airport logic", "Brand logo"). Visible on `demo`/`staging`, links to the relevant doc or decision id. Style with neutral `blaq-*` tokens.
+- `TodoChip`: something planned but not built (e.g., "Cash App/Zelle", "Airport logic", "Brand logo"). Visible in `demo` only, links to the relevant doc or decision id. Style with neutral `blaq-*` tokens.
 - `StatusChip`: current runtime mode of a subsystem (demo/live/test).
-- On `demo`/`staging`, incomplete is never hidden: visible gaps are integrity signals and part of the demonstration. **In production nothing unfinished may be visible**; anything still unfinished must be a tracked launch blocker instead.
+- In `demo`, incomplete is never hidden: visible gaps are integrity signals and part of the demonstration. **In `pilot` and `production` nothing unfinished may be visible to the public**; known gaps go on the pilot's "Known limitations" page (generated from `docs/UNKNOWNS.md`) and unfinished launch blockers stay tracked there.
 
 ## Rules
 
 - No secrets in the repo. `.env.example` lists names and comments only. Real values go in `.env.local`.
-- Stripe is **test mode** until the Phase 9 go-live sign-off. The live key loads only in production and must never load in preview or staging. The live Stripe account belongs to the client (D-103).
+- Stripe is **test mode** in `demo` and `pilot`. A live key loads only in the client's own production deployment after the Phase 10 sign-off. IAS's Stripe is always test mode and never processes his fares (D-103, D-119).
 - Third-party calls must be rate-limited and cached where they cost money (routing especially).
 - No dependency on a vendor's SDK in `lib/scheduler`.
 

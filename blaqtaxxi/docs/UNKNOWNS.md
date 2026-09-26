@@ -1,118 +1,151 @@
 # UNKNOWNS.md — what is still open, and what it blocks
 
-Updated 2026-09-25 after the layout-system review and the production/multi-car/three-surface changes.
+Updated 2026-09-25 (late evening), after Steve's answers on IAS's Stripe, the example SUV, car switching, store accounts, and the iPhone.
 
-**How to read this.** Nothing here stops you from firing the Episode 0 prompt (plan mode is read-only). But six answers will change what Claude *plans*, so answer those first (Section 1). Everything else is either needed by a later phase (Section 2) or has a safe default that Claude will build on and log (Section 3).
+**How to read this.** Section 0 is what your answers settled. Section 1 is the short list that still changes what Claude *plans*. Section 2 is needed before a specific phase. Everything else has a safe default that Claude builds on and logs.
 
 **Rule for Claude:** never assume an item marked **BLOCKING**. Stop and ask (`AskUserQuestion`). Defaulted items are built on the default and logged in `DECISIONS.md` as `assumed`.
 
-Legend: **Answerer** = who can settle it. *Steve* = you. *Client* = the owner-driver of BLAQTAXXI. *Spike* = settled by a test, not an opinion.
+Legend: **Answerer** = who can settle it. *Steve* = you. *Client* = the owner-driver. *Spike* = settled by a test.
 
 ---
 
-## 1. Answer before firing the first prompt (they change the plan)
+## 0. Settled
 
-| ID | Question | Why it matters | Blocks | Default if unanswered | Answerer |
-|---|---|---|---|---|---|
-| **U-D1** | **What phone does the driver use (iPhone or Android), and is a thin native app shell acceptable, or must the driver side be a pure web app (PWA)?** | The driver needs turn-by-turn in Google Maps while our app keeps sending his location so the customer's live map moves. *Verified:* Google's Navigation SDK is native-only (Android/iOS, Flutter, React Native), not web; Maps URLs launch navigation with no key. *My understanding, unverified on his phone:* a PWA sent to the background stops reporting location, so the customer's map would freeze mid-drive. This is the highest-risk unknown | Phase 5 (live tracking). Phase 0.5 spike settles it | **No default.** Run spike SP-1 first; if it fails, a Capacitor-style native shell for `/drive` only (recommended), still Next.js + TypeScript | Client + Spike |
-| **U-V1** | **What does "he could have many cars" mean?** (a) one driver who switches cars (e.g., sedan/SUV/black car) on different days or shifts, or (b) a fleet with additional drivers later? | (a) keeps the scheduler as is: the resource is still one driver, and the car is an attribute that sets the price. (b) is a different product (assignment/dispatch across drivers). It changes the data model now | Phase 4 schema | (a). Schema gets `vehicles`, `price_configs`, and per-time vehicle assignment. Multi-driver stays out of scope | Steve / Client |
-| **U-V2** | **Does the customer ever choose the car?** | The layout system forbids a ride-tier selector. If cars have different prices and customers can pick, we need one. Otherwise the admin assigns the car and the customer just sees it | Phase 3 booking UI | No customer choice. Admin assigns the active car per day/time; price follows that car. Customer choice = a feature flag, off | Client |
-| **U-L1** | **Approve the customer-link change?** Your format (last name + last four of phone) is guessable and exposes pickup address, trip, and live driver location. Proposed: `/pickup/johnson-4821-k9Xp2mQz` (your human-readable part kept, plus a random suffix). Also: is the link **per trip** or **one persistent link per customer**? | Security and privacy. About 10,000 possibilities per surname is trivially guessable, and two customers can share surname + last 4 | Phase 3 (checkout sends the link) | Per-trip link, random suffix, expires after the trip window, hashed at rest, plus a "find my ride" recovery by last name + last 4 + one-time code | Steve / Client |
-| **U-C1** | **Client agreement:** does the client consent to his name, pricing, service area, and transcript being used in a public Skool course? Who owns the repo, the `blaqtaxxi.com` domain/DNS, the Vercel and Google Cloud projects, and the live Stripe account after handoff? | Publishing without consent is a real risk. Ownership decides where we deploy and whose accounts we create | Publishing any episode; Phase 0 deploy target; Phase 9 | Build on demo/staging only; record nothing that shows client data; do not publish until confirmed | Steve / Client |
-| **U-B1** | **BLAQ brand assets and approvals:** logo/wordmark/favicon; the **Nissan Sentra photo** (you referenced `nissan-sentra.jpg`; it was not delivered to me); a driver photo; confirm the assumed canvas colors `#F5F6F7`/`#FFFFFF`; approve a darker text-gray (proposed `#686D71`, see BRAND.md); approve a warning/late-risk color (red is reserved for destructive actions) | The layout's gray text fails contrast (3.19:1 on white, 2.95:1 on canvas, AA needs 4.5:1), and there is no warning color for "running late" | Phase 0.5 (screens), Phase 5 | Use `#686D71` for text-gray in code behind a token, flagged for approval. Late-risk state = navy text + icon + label (no new color) | Client / Steve |
+| Item | Result |
+|---|---|
+| **U-D1** Driver's phone | **Either.** Android today, an iPhone soon. **A thin native shell is acceptable.** The driver app does not own the map; it opens Google Maps. So the shell is required to keep sending location while Google Maps is in front. Both platforms from day one |
+| **U-V1** Many cars | One driver who switches cars by day or shift |
+| **U-V2** Customer chooses the car | **Yes**, at booking, from the cars assigned for that time. Cars: black Nissan Sentra (today) and a luxury SUV shown as an example |
+| **U-L1** Customer link | **Approved:** `/pickup/johnson-4821-k9Xp2mQz`, readable prefix plus random suffix, **per trip** |
+| Delivery model | Pilot on IAS accounts at `blaqtaxxi.iasbootcamp.com`; 1–2 client feedback rounds; public may use it up to the payment step; the client then deploys on his own accounts from IAS's instructions |
+| Ownership during the pilot (part of **U-C1**) | IAS owns the domain/DNS, Vercel, Google Cloud, and Stripe accounts |
+| **U-B1** Canvas colors | **Confirmed** `#F5F6F7` / `#FFFFFF` |
+| **U-B1** Text gray | **Approved** `#686D71` (`blaq-gray-text`) |
+| **U-B1** Warning color | **Approved in principle.** No hex was given; I propose `blaq-amber #A15C00` (5.19:1 on white, 4.80:1 on canvas). One-line confirmation wanted |
+| **U-B3** Brand typeface | **Momo Trust Display** (Google Fonts). Confirmed to exist as a Google Font; weights and license are **not verified** (fetch blocked) |
+| Brand assets (U-B1) | Received: wordmark, favicon, Sentra, Suburban, driver photo (filed in `client-assets/`; findings in Section 3) |
+| **U-P2** IAS Stripe | **IAS is always in test mode.** The objective is to show the client "it works." IAS never takes real fares; the client uses his own live Stripe account in his own deployment |
+| **U-V5** The cars | **The Suburban is not real; it is an example** that shows the client he can manage a fleet in the admin and set a price per vehicle. Placeholder ladder **$65 / $85 / $110**, anchored to third-party Uber Black estimates for Dallas (Uber and Lyft publish no flat Black rate; the estimates are unverified). Editable in admin |
+| **U-V6** Switching cars | **No switching within a shift.** Cars are assigned by day or shift, and a change creates the swap block |
+| **U-D4** Store accounts | IAS owns the Apple Developer and Google developer accounts **in a testing state** (iOS: TestFlight internal testing; Android: Play internal testing, assumed). **IAS never publishes the app.** The client's own store accounts and any publishing are his decision after handoff |
+| **U-D8** Which phone is the default | **iPhone**, through TestFlight internal testing. The iPhone is not real yet; we plan as if it is. Android stays supported (his phone today) |
+| Earlier | Build 032 · Lewisville, TX · price tiers · Google Maps · vehicle is a Sentra |
 
-**Long-lead item to start now (not a blocker for the prompt, but on the critical path to launch):** **U-N1 (SMS).** The customer link is most naturally delivered by text. US SMS to real people needs carrier registration (A2P 10DLC) and consent language, which can take days to weeks. Verify with the provider and start early, or plan email-first at launch.
+---
+
+## 1. Answer before firing the first prompt
+
+Two things are left, and neither stops the plan-mode prompt. Both change what Phase 0.5 can prove.
+
+| ID | Question | Why it matters | Default if unanswered | Answerer |
+|---|---|---|---|---|
+| **U-D7** | **Does IAS have a physical iPhone and a Mac (with Xcode) for the iOS drive test and the TestFlight builds?** The iPhone is not real for the client, but the spike and the TestFlight build still need a real device and a Mac (or a macOS build service, unverified) | iOS is the default platform, and the whole point of the shell is that location keeps flowing while Google Maps is in front. My understanding is that a simulator cannot show real background behavior on a real drive (unverified), so without a physical iPhone the iOS path would ship **built but unproven** | Run SP-1 on Android now (the client's real phone), build the iOS shell, and label iOS **unverified** everywhere until a physical iPhone is used | Steve |
+| **U-V5b** | **Confirm the placeholder SUV prices: $65 / $85 / $110.** I could not get a published Black rate, so I anchored to third-party Dallas estimates (a $7 base, $3.51 per mile, $0.35 per minute; example flat trips of $75–$120). A $65 minimum for the SUV next to a $20 Sentra will look steep; that is fine for a placeholder, but say if you want different numbers | What the client sees in the fleet demo | As written | Steve |
 
 ---
 
 ## 2. Needed before a specific phase
 
-### Access, admin, and business
+### Pilot and handoff
 
 | ID | Question | Blocks | Default | Answerer |
 |---|---|---|---|---|
-| **U-A1** | Admin login method and strength: Google sign-in, email magic link, passkey; require 2FA? Allowed devices? | Phase 4 | Auth.js v5, single allow-listed identity, passkey or 2FA required before production | Client |
-| **U-A2** | Will anyone besides the driver ever need admin (assistant, bookkeeper)? Roles? | Phase 4 | Two roles built in (`admin`, `driver`), one person holds both | Client |
-| **U-C2** | Run costs and who pays: Vercel, Neon, Upstash, Google Maps Platform, Stripe fees, SMS, Sentry. A monthly budget ceiling and alerts | Phase 9 | Free/dev tiers through staging; budget alerts set before launch | Steve / Client |
-| **U-C3** | Support and operations: who answers customer problems, who is paged when the site is down, hosting/maintenance agreement, after-handoff responsibilities | Phase 9 | Error alerts to the owner; runbook delivered at handoff | Steve / Client |
-| **U-C4** | Data retention and deletion: how long contact info and trip logs are kept; how a customer requests deletion | Phase 9 | Contact fields deleted 90 days after the trip; trip totals kept for accounting | Client / counsel |
-| **U-B2** | Legal business name, address, support phone/email, and anything a receipt must show (business name, tax details) | Phase 6 (receipts) | Placeholders behind admin config | Client |
-| **U-B3** | Brand typeface, if any | Phase 0.5 | System font stack from the layout system | Client |
-| **U-B4** | Voice/copy for customer messages, terms, footer | Phase 7 | Plain, direct, short. Editable in admin | Client |
+| **U-F1** | Feedback loop mechanics: how does the client submit feedback (in-app "Send feedback" → n8n → a shared sheet), how long is each of the 1–2 rounds, what is in scope (config, behavior, new features), who triages, and what does "client approves the final" mean in writing | Phase 9 | `docs/PILOT_PLAYBOOK.md` as written: in-app feedback, one-week rounds, config/behavior in scope, new features to a backlog, written sign-off | Steve / Client |
+| **U-H1** | Handoff: can the client (or someone he uses) follow a deploy guide, or should IAS assist live? Who owns the code and IP after handoff (licence terms)? Ongoing support and maintenance? | Phase 10 | Guide + one assisted walkthrough; ownership per a written agreement (open) | Steve / Client |
+| **U-C1** | Course publication: does the client consent to his brand, pricing, photos, and transcript appearing in a public Skool course? | Publishing any episode | Record on `demo` with fake data only; publish nothing with his real data | Steve / Client |
+| **U-C2** | Run costs during the pilot (Vercel, Neon, Upstash, Google Cloud, SMS, storage) and a monthly ceiling; who pays at handoff | Phase 9 | Free/dev tiers, budget alerts | Steve |
+| **U-C3** | Support during the pilot: who answers a member of the public who reaches the payment step and expects a ride | Phase 9 | Pilot banner + "no rides are booked in the pilot" copy | Steve / Client |
+| **U-C4** | Data retention/deletion, including public data entered in the pilot | Phase 9 | Unpaid-hold contact data purged within 24 h; paid test bookings deleted at pilot end | Steve |
 
-### Vehicles, pricing, and scheduling
+### Admin and access
 
 | ID | Question | Blocks | Default | Answerer |
 |---|---|---|---|---|
-| **U-V3** | Is a car's price configuration the same three-step ladder ($20 / $25 / $30 by trip time) with different amounts, or a different structure (per-mile, per-minute, minimum fare, airport fee)? | Phase 2 | Three-tier ladder per car, editable in admin; versioned | Client |
-| **U-V4** | Car details to show customers: year, make, model, color, plate, seats, photo. The filename says **Sentra**; the transcript says black. Year and plate unknown | Phase 4/5 | Fields exist and are admin-editable; no plate in the repo | Client |
-| **U-S1** | Confirm the cutoff reading (D-09): last *pickup* can be scheduled at his end time, ride may finish after | Phase 1 | As written in D-09 | Steve |
-| **U-S2** | His real-world numbers: load and unload time, safety buffer, whether he waits at a pickup and for how long | Phase 1 | 3 min load, 2 min unload, 5 min buffer, 5 min wait (config) | Client |
-| **U-S3** | Is "ride now" in scope for launch? (The transcript says DM him for a pickup right now.) | Phase 3 | Yes, if feasible | Client |
-| **U-S4** | Airports (DFW, Love Field) in the service area? They have their own permits and curb rules | Phase 2 / 9 | Treated as out of scope until compliance is verified; shows "request a quote" | Client / counsel |
-| **U-S5** | Party size, luggage, car seats, pets, wheelchair-accessible needs | Phase 3 | Max 4 passengers; no accommodations promised | Client |
-| **U-S6** | Trips outside DFW: refuse, or "request a quote"? | Phase 3 | Refuse with a contact prompt | Client |
-| **U-S7** | Round trips, wait-and-return, multiple stops, recurring weekly rides | later | Not in MVP | Client |
-| **U-S8** | Cancellation dollar amounts and no-show wait (D-52, D-53): $5 / $10 / 5 min are my picks | Phase 6 | As written; one config file | Client |
-| **U-S9** | Does the driver want a way to *decline* or move a booking that is already paid (emergency)? | Phase 4 | Driver cancel = 100% refund + customer notice | Client |
+| **U-A1** | Admin login method and strength (Google sign-in, magic link, passkey); require 2FA | Phase 4 | Auth.js v5, one allow-listed identity, passkey or 2FA before the public sees the pilot | Client |
+| **U-A2** | Anyone besides the driver needing admin access | Phase 4 | Two roles in code, one person holds both | Client |
+| **U-M1** | Google Cloud (IAS-owned for the pilot): budget cap, products enabled (Maps JS, Routes, Places, Geocoding). Pricing **not verified** | Phase 2 | Demo provider until keys exist; separate browser/server keys | Steve |
 
-### Payments and notifications
+### Cars, scheduling, pricing
 
 | ID | Question | Blocks | Default | Answerer |
 |---|---|---|---|---|
-| **U-P1** | Who absorbs card fees on a $20 fare; tips or not; any promo codes | Phase 6 | Absorbed; no tips; no promos | Client |
-| **U-P2** | The live Stripe account must belong to the client. Who creates it, and payout schedule/bank | Phase 9 | Test mode until done | Client |
-| **U-P3** | Payment methods: card plus Apple Pay/Google Pay, or also Cash App/Zelle/cash | Phase 6 | Card + wallets via Stripe | Client |
-| **U-N1** | SMS provider and start of carrier registration; is the link also emailed? | Phase 7 | Email + on-screen link at launch; SMS behind a seam | Client / Steve |
-| **U-N2** | Which messages go out: confirmation (with link), T-30 reminder, late notice, no-show, receipt | Phase 7 | Those five | Client |
+| **U-V3** | Is each car's price the same three-step ladder with different amounts, or a different structure (per-mile, minimum, airport fee) | Phase 2 | Three-tier ladder per car | Client |
+| **U-V4** | Car details to show: year, make, model, color, plate, seats, photo | Phase 4 | Admin fields; no plate in the repo | Client |
+| **U-S1** | Confirm the cutoff reading (D-09): last *pickup* at his end time, ride may finish after | Phase 1 | As written | Steve |
+| **U-S2** | His real load/unload time, buffer, and wait | Phase 1 | 3 / 2 / 5 / 5 min (config) | Client |
+| **U-S3** | Is "ride now" in scope | Phase 3 | Yes, if feasible | Client |
+| **U-S4** | Airports (DFW, Love Field) in the area | Phase 2 / 10 | Out of scope until compliance is verified | Client / counsel |
+| **U-S5** | Party size, luggage, car seats, accessibility | Phase 3 | Party size limited by the chosen car's seats; no other accommodations promised | Client |
+| **U-S6** | Trips outside DFW: refuse, or "request a quote" | Phase 3 | Refuse with a contact prompt | Client |
+| **U-S7** | Round trips, multiple stops, recurring rides | later | Not in MVP | Client |
+| **U-S8** | Cancellation dollar amounts (D-52, D-53): $5 / $10 / 5 min are my picks | Phase 6 | As written | Client |
+| **U-S9** | Driver cancelling or moving a paid booking | Phase 4 | Driver cancel = 100% refund + customer notice | Client |
 
-### Maps, driver app, and the customer screens
-
-| ID | Question | Blocks | Default | Answerer |
-|---|---|---|---|---|
-| **U-M1** | Google Maps Platform: whose billing account, budget cap, which products (Maps JS, Routes, Places, Geocoding); current pricing is **not verified** | Phase 2 | Demo provider until a key exists; separate browser/server keys | Client / Steve |
-| **U-M2** | What exactly the customer sees *during* the trip: car position, route line, both pins, ETA to drop-off, refresh rate | Phase 5 | All of those; 10 s poll | Steve / Client |
-| **U-D2** | Driver's navigation app: Google Maps default; allow Waze/Apple Maps as a setting? | Phase 5 | Google Maps only; setting later | Client |
-| **U-D3** | At pickup, how does the driver confirm the right person: ask the customer's last name, or a 4-digit code the customer shows | Phase 5 | Name check; PIN optional later | Client |
-| **U-R1** | Keep the layout's 5-star rating (private to the owner)? | Phase 8 | Keep, optional, private | Client |
-| **U-R2** | The layout has "Message driver". Replace with call/text? Whose number does the customer see (his personal number, or a masked one, which costs extra)? | Phase 5 | Tap-to-call/text with the number set in admin; masking is a flagged option | Client |
-| **U-R3** | Receipt content and delivery: on the customer's page, also emailed, PDF? | Phase 6 | On page + emailed link | Client |
-
-### Legal and compliance (launch gates, unverified)
+### Payments, notifications, media
 
 | ID | Question | Blocks | Default | Answerer |
 |---|---|---|---|---|
-| **U-G1** | Regulatory status, insurance for paid rides, airport/venue permits, sales/other taxes, privacy/location-consent rules. **None verified.** Who verifies (attorney, insurer) and by when | Phase 9 (go-live) | Launch gate; no public launch until signed off in `COMPLIANCE_CHECKLIST.md` | Client / counsel |
-| **U-G2** | Terms of service, privacy policy, and the location-sharing disclosure: who writes and approves them | Phase 9 | Drafts prepared for counsel review; not presented as legal advice | Client / counsel |
+| **U-P1** | Who absorbs card fees on a $20 fare; tips; promo codes | Phase 6 | Absorbed; no tips; none | Client |
+| **U-P3** | Payment methods at production: card + Apple/Google Pay, or also Cash App/Zelle | Phase 6 | Card + wallets | Client |
+| **U-N1** | SMS provider and carrier registration (lead time **not verified**). **In the pilot no SMS goes to the public** | Phase 7 | Pilot: on-screen link for test bookings, email only to allow-listed testers. SMS behind a seam | Client / Steve |
+| **U-N2** | Which messages go out | Phase 7 | Confirmation (with link), T-30 reminder, late notice, no-show, receipt | Client |
+| **U-B2** | Legal business name, address, support contact, receipt details | Phase 6 | Admin placeholders | Client |
+| **U-B4** | **Wordmark assets:** a transparent-background or SVG wordmark, and a reversed (white) version for navy headers and the driver card. The supplied PNG is 195×75, opaque, black on white | Phase 0.5 | Place the supplied PNG on white only; flag as a visible limitation | Client / Steve |
+| **U-B5** | **Real photos of the cars.** The Sentra and Suburban images look like manufacturer stock images (not verified); use the driver's real cars for a real launch | Phase 4 | Use the supplied images in the pilot only if the client confirms he is comfortable; label the Suburban "example" | Client |
+| **U-B6** | Voice and copy for customer messages, terms, footer | Phase 7 | Plain, direct, short; editable in admin | Client |
+| **U-B7** | **A better driver headshot.** `profile.jpg` is a tilted, fisheye-distorted selfie. Riders identify drivers by photo | Phase 5 | Crop to the face for the pilot; recommend a straight-on, well-lit photo | Client |
+| **U-B8** | **Favicon source.** `favicon.jpg` is a 512×512 JPEG, soft, no transparency | Phase 0 | Generate sizes from it for the pilot; request an SVG/PNG master | Client |
+| **U-B9** | Body typeface: Momo Trust Display for the wordmark and headings; is there a text face for UI, or the system stack | Phase 0.5 | System stack for UI text | Client |
+
+### Driver app, maps, customer screens
+
+| ID | Question | Blocks | Default | Answerer |
+|---|---|---|---|---|
+| **U-D6** | Shell architecture: load the hosted `/drive` in the shell (fast to build, instant updates) or bundle a static driver UI. **IAS never publishes the app, so store-review risk for a wrapped web page only matters if the client later publishes it himself** | Phase 5 | Hosted `/drive` | Steve |
+| **U-M2** | What the customer sees during the trip | Phase 5 | Car on the route, both pins, ETA to drop-off, 10 s refresh | Steve / Client |
+| **U-D2** | Navigation app: Google Maps only, or Waze/Apple Maps as a setting | Phase 5 | Google Maps only | Client |
+| **U-D3** | Confirming the customer at pickup | Phase 5 | Driver asks the last name; a code is a later option | Client |
+| **U-R1** | Keep the optional, private 5-star rating | Phase 8 | Keep | Client |
+| **U-R2** | "Message driver": tap-to-call/text on which number (his personal number, or masked, which costs extra) | Phase 5 | Number set in admin; masking later | Client |
+| **U-R3** | Receipt content and delivery | Phase 6 | On page + emailed link | Client |
+
+### Legal (launch gate for the client's own deployment; unverified)
+
+| ID | Question | Blocks | Default | Answerer |
+|---|---|---|---|---|
+| **U-G1** | Regulatory status, insurance for paid rides, permits, taxes, privacy/location-consent. **None verified.** Also: the pilot collects real public data before payment, and shows real availability and pricing; what notice and terms does that need | Phase 9 (pilot to the public) and Phase 10 | Pilot privacy notice + "pilot, no rides booked" terms drafted for counsel; go-live gated on `COMPLIANCE_CHECKLIST.md` | Client / counsel |
+| **U-G2** | Terms of service, privacy policy, and location-sharing disclosure: who writes and approves | Phase 9 / 10 | Drafts for counsel review; not presented as legal advice | Client / counsel |
 
 ---
 
-## 3. Spikes (settled by a test, not a decision)
+## 3. Findings from the client assets (filed in `client-assets/`)
+
+| File | Finding | Action |
+|---|---|---|
+| `wordmark__blaq.png` | 195×75 PNG, **fully opaque** (a white background is baked in), black lettering. Black on the navy header is 1.31:1, so it cannot go on navy. Soft on high-density screens | Request SVG/transparent + reversed version (U-B4) |
+| `favicon.jpg` | 512×512 JPEG, black "B", soft, no transparency | Generate 16/32/180/192/512 for the pilot; request a master (U-B8) |
+| `nissan-sentra.jpg` | 1080×1080, black Nissan sedan on white. An "SR" badge is visible on the grille; trim not confirmed | Use as the Sentra image; confirm model/year (U-V5) |
+| `chevrolet-suburban-3500hdheavy-duty.jpg` | 1080×1080, dark Chevrolet Suburban on white, "High Country" badge visible; filename says 3500HD | Treated as an **example** car (U-V5) |
+| `profile.jpg` | 1080×1080, tilted, fisheye-distorted selfie | Crop for the pilot; request a headshot (U-B7) |
+| All | Kept out of git (`client-assets/` is gitignored); uploaded through the admin | Media storage decided in `DECISIONS.md` |
+
+## 4. Spikes (settled by a test, not a decision)
 
 | ID | Test | Settles | When |
 |---|---|---|---|
-| **SP-1** | Drive test on the **client's actual phone**: driver PWA sends pings while he navigates in Google Maps for 30 minutes; log the gap between pings, screen-locked and unlocked, on iOS/Android as applicable | U-D1: does the customer's live map keep moving | Phase 0.5 |
-| **SP-2** | If SP-1 fails: proof of concept of a native shell with background location for `/drive` only | U-D1 (native shell scope and store distribution) | Phase 0.5 |
-| **SP-3** | Compare Routes-API predicted travel times (with future departure) against 20 real drives at the driver's typical hours | Buffer and peak factors (U-S2); accuracy claims | Phase 5, then post-launch |
-| **SP-4** | Google Maps deep link (`dir/?api=1&destination=…&dir_action=navigate`) opens and starts navigation on the driver's phone | Driver nav flow | Phase 0.5 |
-
-## 4. Settled since the last list
-
-| Item | Result |
-|---|---|
-| Build number | 032 (confirmed) |
-| Lewisville → Dallas at $25 | Confirmed |
-| Price tiers | Confirmed for MVP |
-| Cutoff rule | Stated; my reading still to confirm (U-S1) |
-| Map provider | **Google Maps** (stated). Google Maps URLs need no key (verified); Navigation SDK is native-only (verified) |
-| Cancellation | Modeled on Uber/Lyft; only Lyft's 60-minute rule verified, amounts assumed |
-| Vehicle model | **Sentra** (from the photo filename; the transcript's "Central" was a transcription error). Color black per transcript |
-| Warning color | Red now exists in the palette but is reserved for destructive actions; a warning color is still open (U-B1) |
+| **SP-1** | On a **real iPhone (the default) and a real Android phone**: the native shell sends location every 15 s while the driver navigates in Google Maps for 30 minutes, screen unlocked and locked. Log ping gaps, battery drain, and OS prompts/notifications. Simulators are not evidence (my understanding, unverified). **Needs a physical iPhone and a Mac (U-D7)** | Whether the shell keeps the customer's map moving (U-D1 follow-through) | Phase 0.5 |
+| **SP-2** | Distribution dry run: iPhone through **TestFlight internal testing** on IAS's Apple Developer account, Android through the Play internal testing track (assumed) or a direct install. Record every step, cost, and blocker (tester caps, build expiry, whether the driver must be an App Store Connect user are unverified) | U-D4 follow-through | Phase 0.5 |
+| **SP-3** | Compare routing-API predicted times (future departure) with 20 real drives at his usual hours | Buffer and peak factors (U-S2) | Phase 5, then during the pilot |
+| **SP-4** | The Google Maps deep link opens the Maps app and starts navigation on both phones | Driver flow | Phase 0.5 |
 
 ## 5. What I could not verify (say so, don't guess)
 
-- The nissan-sentra.jpg file was not received.
-- Google Maps Platform pricing and quotas; SMS carrier-registration lead times; Stripe's current fees.
-- Whether Uber's help pages match my Lyft-based picks (Uber's pages returned 404).
-- Any legal, insurance, permit, or privacy requirement.
-- Background-location behavior on the client's phone (SP-1).
+- The exact weights and license of **Momo Trust Display** (the page confirmed the family is on Google Fonts; details did not load, GitHub was blocked).
+- Apple/Google developer program rules and costs, TestFlight internal-testing limits (tester caps, build expiry, whether the driver must be an App Store Connect user), the Play internal-testing equivalent, and any background-location plugin's behavior.
+- What Uber and Lyft charge for Black: neither publishes a flat Black rate. The SUV placeholder is anchored to third-party estimates (RideWise, TaxiFareFinder) that I could not verify.
+- Whether a simulator can stand in for a real iPhone on a real drive (my understanding is no).
+- Google Cloud/Maps pricing, Vercel and storage limits, SMS registration lead times, Stripe's current fees.
+- Whether the two car images are stock images (they look like it).
+- Every legal, insurance, permit, and privacy requirement.
+- That Uber's cancellation policy matches my Lyft-based picks (Uber's pages returned 404).

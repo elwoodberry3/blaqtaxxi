@@ -18,7 +18,8 @@ This is what makes it testable, explainable on camera, and reusable for any solo
 | Term | Meaning |
 |---|---|
 | **Item** | Something on the driver's day: a `ride` or a `block` (lunch, car wash) |
-| **Car** | A vehicle with its own price configuration. Chosen by admin assignment, not by feasibility (D-83) |
+| **Car** | One of the driver's vehicles, with its own price configuration. The **customer chooses** it at booking (D-82); it is offered only inside its assignment windows (D-84). It changes price and display, not travel-time feasibility (D-83) |
+| **Swap block** | An ordinary block at the car base (`home_place`) when the driver changes cars mid-day (default 30 min). The engine already handles blocks (S8), so it accounts for the trip to the car |
 | **Start place / end place** | Where the driver must be when the item starts / where he is when it ends. Ride: pickup → dropoff. Block: same place both |
 | **Dwell** | Load time at pickup (3 min) and unload time at drop-off (2 min) |
 | **Deadhead** | Driving with no rider: from previous item's end place to this item's start place |
@@ -68,6 +69,7 @@ export interface DayContext {
   homeBase: Place;                                 // D-12
   window: { start: Date; end: Date };              // from dayWindow(date, tz)
   driverNow?: { place: Place; at: Date };          // live position, for ride-now and late-risk
+  vehicleWindows: Record<string, { from: Date; to: Date }[]>;  // per-car assignment windows (D-84); no overlaps
 }
 
 export type Reason =
@@ -75,7 +77,8 @@ export type Reason =
   | 'TOO_SOON'
   | 'OVERLAP'
   | 'CANT_REACH_PICKUP'      // previous item + deadhead + buffer > pickupAt
-  | 'BREAKS_NEXT_PICKUP';    // this ride's end + deadhead + buffer > next start
+  | 'BREAKS_NEXT_PICKUP'     // this ride's end + deadhead + buffer > next start
+  | 'CAR_NOT_ASSIGNED';      // pickup is outside the chosen car's assignment windows (D-112)
 
 export type InsertResult =
   | { ok: true;  plannedEndAt: Date; rideMinutes: number;
@@ -86,9 +89,10 @@ export type InsertResult =
 
 ## 5. Feasibility: `canInsert(candidate, schedule, ctx, provider, cfg)`
 
-The candidate is `{ pickup, dropoff, pickupAt, rideNow? }`. The existing `schedule` is assumed **already valid** and sorted by start time.
+The candidate is `{ vehicleId, pickup, dropoff, pickupAt, rideNow? }`. The existing `schedule` is assumed **already valid** and sorted by start time.
 
 1. **Availability.** The `window` is that date's effective day: the default 05:00–24:00, or the driver's override for that date (shortened, moved, or closed; D-44). Require `window.start <= pickupAt <= window.end`. **The end time is a cutoff on when a ride may *start*** (D-09); `plannedEndAt` may fall after it. Compute `rideMinutes = provider.minutes(pickup, dropoff, pickupAt + loadDwell)` and `plannedEndAt = pickupAt + loadDwell + rideMinutes + unloadDwell` (needed for steps 3 and 5). A closed day has no window: every candidate fails. Fail → `OUTSIDE_AVAILABILITY`.
+1b. **Car.** Require `pickupAt` to lie inside one of `ctx.vehicleWindows[vehicleId]`. Fail → `CAR_NOT_ASSIGNED`. (Everything below is car-independent: only the driver's travel matters.)
 2. **Lead time.** Unless `rideNow`, `pickupAt >= now + minLeadMin`. Fail → `TOO_SOON`.
 3. **Overlap.** No existing item's `[start, end)` intersects `[pickupAt, plannedEndAt)`. Fail → `OVERLAP` (takes precedence over 4 and 5).
 4. **Reach the pickup (predecessor).** `prev` = the item with the latest `end <= pickupAt`.
@@ -117,7 +121,9 @@ Called on every driver ping (server side, cached per ping timestamp).
 - **Cascade.** A late pickup delays that ride's end by `lateMin`. Propagate: for each following item, `lateMin' = max(0, lateMin - slack(prev→item))`. Flag every item with `lateMin' > 0`. The driver console shows the chain; the async layer notifies riders whose pickups are threatened.
 - No auto-reshuffle in MVP (D-26). The engine only reports.
 
-## 7. Slot search: `findSlots({ pickup, dropoff, date, ... })`
+## 7. Slot search: `findSlots({ vehicleId, pickup, dropoff, date, ... })`
+
+**Per car.** The customer flow first asks which cars have at least one slot that day (and seats >= party size), shows each with its price for this trip, then shows the times for the chosen car. Run `findSlots` once per assigned car and cache shared routing calls so the extra cars do not multiply provider cost.
 
 1. Build the day window and the sorted schedule (rides + blocks).
 2. Walk the **gaps**. For each gap compute the earliest possible pickup (`prev.endAt + deadhead + buffer`), snap **up** to the 5-min grid, then step forward by `slotStepMin`, calling `canInsert` until the gap's latest possible time is exceeded.
@@ -150,6 +156,10 @@ Fixture places and times: `docs/fixtures/travel-matrix.json`. **Illustrative num
 | **S11a** | Per-date override: Thursday ends 14:00 (D-44). Candidate `LEW_A → DAL_A` pickup 14:00 (off-peak, ends 14:40) | `ok`. Pickup 14:05 → `OUTSIDE_AVAILABILITY`. The same request on a normal day is unaffected |
 | **S11b** | Override closes the whole day | Every candidate → `OUTSIDE_AVAILABILITY`; `findSlots` returns `[]` with reason `DAY_CLOSED` |
 | **S11c** | Driver shortens a day that already has a 15:00 booking (D-45) | The existing booking stays valid; `validateSchedule` reports it as `PAST_CUTOFF` (warning, not error); new candidates after the cutoff are rejected |
+| **S12a** | Car windows (D-84): Sentra assigned 05:00–13:00, Suburban assigned 13:30–24:00, swap block at `HOME` 13:00–13:30. Candidate pickups: Sentra `LEW_A` 13:35; Suburban `LEW_A` 12:55 | Both `CAR_NOT_ASSIGNED` (wrong car for that time) |
+| **S12b** | Same day. Suburban `LEW_A` pickup: 13:35, then 13:45 | 13:35 → `CANT_REACH_PICKUP` (swap block ends 13:30 at `HOME`; 13:30 + 6 + 5 = 13:41 > 13:35, shortfall 6). **13:45 → `ok`** |
+| **S12c** | Same day. Sentra ride `LEW_A → DAL_A` at 12:00 (ends 12:40 at `DAL_A`) before the 13:00 swap block at `HOME` | `BREAKS_NEXT_PICKUP`, **shortfall 19**: `DAL_A → HOME` 34 min from 12:40 → 13:14, +5 = 13:19 > 13:00. The engine will not strand him far from the car he must swap |
+| **S12d** | Party of 5 requested; Sentra seats 4, Suburban seats 7 | Car list shows only the Suburban (`PARTY_TOO_LARGE` for the Sentra); the Sentra is never offered |
 | **S10** | DST days (Sun 2026-03-08 and Sun 2026-11-01) | `dayWindow` returns different UTC offsets but the same 19 h local window; no fixed `-6h` anywhere |
 | **L1** | Driver idle at `DAL_A` at 09:50, next pickup `LEW_A` 10:20 | Off-peak 35 → 10:25 > 10:20 → `AT_RISK`, **late 5 min** |
 | **L2** | L1 plus a following ride whose slack after the 10:20 ride is 3 min | Cascade: late 5 → following item late `5 - 3 = 2`; both flagged |
@@ -166,7 +176,7 @@ A price configuration belongs to a **car** (D-80/D-81). Tiers are evaluated on t
 | P3 | `LEW_A → DAL_A` quoted at 08:00 vs 14:00, car 1 | Both **$25**. Price ignores traffic |
 | P4 | `FRI → FTW_A`, reference 52 min, car 1 | **$30** |
 | P5 | Out-of-area point | No quote; `OUT_OF_AREA` |
-| P6 | Same `LEW_A → DAL_A` trip with car 2 (`pc_xl_v1`) | **$30** (car 2's 30–45 tier). Same slots offered as car 1: feasibility is car-independent |
+| P6 | Same `LEW_A → DAL_A` trip priced for both cars in the customer's car list: car 1 (`pc_std_v1`) and car 2 (`pc_lux_v1`) | Car 1 **$25**, car 2 **$85** (its 30–45 tier; placeholder Black-style ladder, D-123). Where both cars are assigned to the same time the offered pickup times are identical (feasibility is car-independent); the customer sees both prices side by side |
 | P7 | Book at `pc_std_v1` v1 ($25), then the owner publishes v2 with $28 for that tier | Existing booking still **$25** (snapshot of config id + version). A new quote is **$28**. Boundary: exactly 30 min → first tier; exactly 45 → second |
 
 ### Policy (`lib/policy`)
